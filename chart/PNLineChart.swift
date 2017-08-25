@@ -244,6 +244,8 @@ class PNLineChart: UIView{
         
         var text : [String] = ["","","","","","","","","","","","","","","","","","",""]
         
+        
+        // 0 for testCase, 1 for regression case
         for lineIndex in 0..<chartData.count {
             let chartData: PNLineChartData = self.chartData[lineIndex] as! PNLineChartData
             let chartLine = chartLineArray[lineIndex] as! CAShapeLayer

@@ -43,7 +43,7 @@ class SubContentsViewController: UIViewController {
         
         //delete untested pass
         //yLabel = yLabel.filter{ $0 != 0 }
-        //var yLabel = [log10(147.0),log10(160.0),log10(159.0),log10(153.0),log10(189.0),log10(128.0),log10(145.0),log10(147.0),log10(156.0),log10(70.0)]
+        var yLabel = [log10(147.0),log10(160.0),log10(159.0),log10(153.0),log10(189.0),log10(128.0),log10(145.0),log10(147.0),log10(156.0),log10(70.0), log10(50),log10(40),log10(10), log10(5),0,0,0,0,0]
         
         // since x-axis start from -0.3 , need reverse
         yLabel = yLabel.reversed()
@@ -66,20 +66,20 @@ class SubContentsViewController: UIViewController {
             return item
         })
         
-//        let regressionData = PNLineChartData()
-//        regressionData.color = PNRed
-//        regressionData.itemCount = dataRegression.count
-//        regressionData.inflexPointStyle = .Cycle
-//        regressionData.getData = ({
-//            (index: Int) -> PNLineChartDataItem in
-//            let yValue = CGFloat(dataRegression[index])
-//            let item = PNLineChartDataItem(y: yValue)
-//            return item
-//        })
+        let regressionData = PNLineChartData()
+        regressionData.color = PNRed
+        regressionData.itemCount = regressionLabel.count
+        regressionData.inflexPointStyle = .Cycle
+        regressionData.getData = ({
+            (index: Int) -> PNLineChartDataItem in
+            let yValue = CGFloat(self.regressionLabel[index])
+            let item = PNLineChartDataItem(y: yValue)
+            return item
+        })
         
         
         
-        lineChart.chartData = [data]
+        lineChart.chartData = [data, regressionData]
         lineChart.strokeChart()
      
         // Change the chart you want to present here
