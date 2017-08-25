@@ -12,6 +12,7 @@ class SubContentsViewController: UIViewController {
     
     let fullScreenSize = UIScreen.main.bounds.size
     public var yLabel = [Double]()
+    public var regressionLabel = [Double]()
     public let userName = String()
     public var distanceVary = Double()
     public var xLabel = [String]()
@@ -42,22 +43,17 @@ class SubContentsViewController: UIViewController {
         
         //delete untested pass
         //yLabel = yLabel.filter{ $0 != 0 }
-        var yLabel = [log10(147.0),log10(160.0),log10(159.0),log10(153.0),log10(189.0),log10(128.0),log10(145.0),log10(147.0),log10(156.0),log10(70.0)]
-        
-        //fillful untested case( using 0)
-        if( yLabel.count < 19){
-            for _ in 1...(19 - yLabel.count){
-                yLabel.append(0)
-            }
-        }
+        //var yLabel = [log10(147.0),log10(160.0),log10(159.0),log10(153.0),log10(189.0),log10(128.0),log10(145.0),log10(147.0),log10(156.0),log10(70.0)]
         
         // since x-axis start from -0.3 , need reverse
         yLabel = yLabel.reversed()
+        
 
         
         
-        
+        regressionLabel = [1.3 , 2.5 , 4]
         let dataArr = yLabel
+        //let dataRegression = regressionLabel
         
         let data = PNLineChartData()
         data.color = PNDeepGreen
@@ -70,23 +66,28 @@ class SubContentsViewController: UIViewController {
             return item
         })
         
+//        let regressionData = PNLineChartData()
+//        regressionData.color = PNRed
+//        regressionData.itemCount = dataRegression.count
+//        regressionData.inflexPointStyle = .Cycle
+//        regressionData.getData = ({
+//            (index: Int) -> PNLineChartDataItem in
+//            let yValue = CGFloat(dataRegression[index])
+//            let item = PNLineChartDataItem(y: yValue)
+//            return item
+//        })
+        
         
         
         lineChart.chartData = [data]
         lineChart.strokeChart()
-       
-        
-        
-        
-        
+     
         // Change the chart you want to present here
         self.view.addSubview(lineChart)
         
         
     }
-
-
-
+    
 }
 
 

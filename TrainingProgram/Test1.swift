@@ -41,7 +41,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
     public var distanceVary = Double() //  pass to resultView controller
-    public let fontSize = [77,46.5,37,28.5,22.5,18,14.5,11.5,9,7,6,4.5,3.5,3,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance
+    public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77
     
     
     
@@ -177,6 +177,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         
         //distance didnot affect fontsize
+        //textView.font = UIFont.preferredFont(forTextStyle: .headline)
         textView.font = .systemFont(ofSize: CGFloat(fontSize[num - 1] * 1.4))
 
         
@@ -381,15 +382,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
 //        }
         
         let commonWords = re1Arr.filter(re2Arr.contains)
-        
-        
-        if (commonWords.count >= 3){
-            return commonWords.count
-        }
-        else{
-            return 0
-        }
-    }
+        return commonWords.count
+}
     
 
     
@@ -495,14 +489,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             if(timeSpent == 0){
                 self.timeSpent.append(timeSpent)
             }
-            else{
+            if(correctWords != 0 ){
                 timeSpent = log10(correctWords / timeSpent * 60)
             }
             self.timeSpent.append(timeSpent)
             textView.text = ""  
             
             //previous test OK -> next test
-            if(self.findAccuracy(myNumber: testNumbers + 1) != 0){
+            if(self.findAccuracy(myNumber: testNumbers + 1) > 1){
                 testNumbers += 1
                 recordButton.isHidden = true
                 self.countDownNumber = 4
