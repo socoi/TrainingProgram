@@ -55,8 +55,8 @@
 		639F34D51E53081500D0F47C /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34D41E53081500D0F47C /* MainViewController.swift */; };
 		639F35451E53406300D0F47C /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		639F354A1E53410200D0F47C /* SwiftCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F35491E53410200D0F47C /* SwiftCharts.framework */; };
-		63C78ACF1E5346CF00479725 /* SwiftCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C78ACE1E5346CF00479725 /* SwiftCharts.framework */; };
-		63C78AD01E5346CF00479725 /* SwiftCharts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 63C78ACE1E5346CF00479725 /* SwiftCharts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		63A7E72F1F5058AA001B475A /* SwiftCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63A7E72E1F5058AA001B475A /* SwiftCharts.framework */; };
+		63A7E7301F5058E8001B475A /* SwiftCharts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 63A7E72E1F5058AA001B475A /* SwiftCharts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		63C78B0C1E5351C500479725 /* PNBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B011E5351C500479725 /* PNBar.swift */; };
 		63C78B0D1E5351C500479725 /* PNBarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B021E5351C500479725 /* PNBarChart.swift */; };
 		63C78B0E1E5351C500479725 /* PNChartLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B031E5351C500479725 /* PNChartLabel.swift */; };
@@ -77,8 +77,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				63A7E7301F5058E8001B475A /* SwiftCharts.framework in Embed Frameworks */,
 				639F35451E53406300D0F47C /* (null) in Embed Frameworks */,
-				63C78AD01E5346CF00479725 /* SwiftCharts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +137,7 @@
 		639F34CE1E52E52600D0F47C /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Asset.xcassets; path = TrainingProgram/Asset.xcassets; sourceTree = "<group>"; };
 		639F34D41E53081500D0F47C /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = SOURCE_ROOT; };
 		639F35491E53410200D0F47C /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCharts.framework; path = "/Users/macuser/Downloads/So program/TrainingProgram/SwiftCharts.framework"; sourceTree = "<absolute>"; };
-		63C78ACE1E5346CF00479725 /* SwiftCharts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftCharts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		63A7E72E1F5058AA001B475A /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftCharts.framework; sourceTree = "<group>"; };
 		63C78B011E5351C500479725 /* PNBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBar.swift; path = chart/PNBar.swift; sourceTree = "<group>"; };
 		63C78B021E5351C500479725 /* PNBarChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBarChart.swift; path = chart/PNBarChart.swift; sourceTree = "<group>"; };
 		63C78B031E5351C500479725 /* PNChartLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNChartLabel.swift; path = chart/PNChartLabel.swift; sourceTree = "<group>"; };
@@ -160,8 +160,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63A7E72F1F5058AA001B475A /* SwiftCharts.framework in Frameworks */,
 				639F354A1E53410200D0F47C /* SwiftCharts.framework in Frameworks */,
-				63C78ACF1E5346CF00479725 /* SwiftCharts.framework in Frameworks */,
 				639F34401E51641C00D0F47C /* CoreGraphics.framework in Frameworks */,
 				639F343E1E51641100D0F47C /* Foundation.framework in Frameworks */,
 				639F343C1E51640600D0F47C /* UIKit.framework in Frameworks */,
@@ -191,6 +191,7 @@
 		639F342C1E51634900D0F47C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63A7E72E1F5058AA001B475A /* SwiftCharts.framework */,
 				639F343F1E51641C00D0F47C /* CoreGraphics.framework */,
 				639F343D1E51641100D0F47C /* Foundation.framework */,
 				639F343B1E51640600D0F47C /* UIKit.framework */,
@@ -201,7 +202,6 @@
 				639F34311E5163D100D0F47C /* CoreMedia.framework */,
 				639F342F1E5163C300D0F47C /* ImageIO.framework */,
 				639F342D1E5163B300D0F47C /* QuartzCore.framework */,
-				63C78ACE1E5346CF00479725 /* SwiftCharts.framework */,
 				F4CC9CC950E550AF07E76492 /* Pods_TrainingProgram.framework */,
 			);
 			name = Frameworks;

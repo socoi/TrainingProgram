@@ -237,12 +237,13 @@ class PNLineChart: UIView{
         }
     }
     
-    // This method will be called and stroke the line in animation
-    func strokeChart() {
+    //para：1. start from which index 2. scope
+    func strokeChart(_ controlIndex : [Double]) {
         let chartPaths = NSMutableArray()
         let pointPaths = NSMutableArray()
         
         var text : [String] = ["","","","","","","","","","","","","","","","","","",""]
+        var textPoint : [String] = ["" , ""]
         
         
         // 0 for testCase, 1 for regression case
@@ -280,6 +281,9 @@ class PNLineChart: UIView{
             var lastY: CGFloat = 0.0
             let inflexionWidth = chartData.inflexionPointWidth
             
+            
+            //case1 : 19 testing points
+            if(lineIndex == 0){
             for index in 0..<chartData.itemCount {
                 yValue = CGFloat(chartData.getData(index).y)
                 
@@ -311,7 +315,7 @@ class PNLineChart: UIView{
                     if index != 0 {
                         // Calculate the point for line
                         
-                                              let distance = CGFloat(sqrt(pow(Double(x - lastX), 2.0) + pow(Double(y - lastY), 2.0)))
+                        let distance = CGFloat(sqrt(pow(Double(x - lastX), 2.0) + pow(Double(y - lastY), 2.0)))
                         let lastX1 = lastX + (inflexionWidth/2.0) / distance * (x - lastX)
                         let lastY1 = lastY + (inflexionWidth/2.0) / distance * (y - lastY)
                         let x1 = x - (inflexionWidth/2.0) / distance * (x - lastX)
@@ -323,6 +327,39 @@ class PNLineChart: UIView{
                     lastX = x
                     lastY = y
                     
+                default:
+                    if index != 0 {
+                        progressLine.addLine(to: CGPoint(x: x, y: y))
+                    }
+                    
+                    progressLine.move(to: CGPoint(x: x, y: y))
+                }
+                linePointsArray.add(PNValue(point: CGPoint(x: x, y: y)))
+            }
+            }
+            
+            //case2 : least square regression( two stright lines )
+            if(lineIndex == 1){
+            for index in 0..<chartData.itemCount {
+                yValue = CGFloat(chartData.getData(index).y)
+                
+                if(yValueMax - yValueMin == 0){
+                    innerGrade = (yValue - yValueMin) / (yValueMax - yValueMin + 1)}
+                else{
+                    innerGrade = (yValue - yValueMin) / (yValueMax - yValueMin)
+                }
+                
+                //calculate intersect position
+                let xIntersect = controlIndex[1] / (0.1 * controlIndex[3])
+                var x: CGFloat = 0
+                
+                if(index == 0){x = chartMargin * 2.0 + CGFloat(controlIndex[0]) * xLabelWidth}
+                if(index == 1){x = chartMargin * 2.0 + CGFloat(3 + xIntersect) * xLabelWidth}//第三个x坐标为0
+                if(index == 2){x = chartMargin * 2.0 + CGFloat(18) * xLabelWidth}
+                
+                let y: CGFloat = chartCavanHeight - (innerGrade * chartCavanHeight!)
+                
+                switch chartData.inflexPointStyle {
                 // Square Style Point
                 case .Square:
                     let squareRect = CGRect(x: x - inflexionWidth/2.0, y: y - inflexionWidth/2.0, width: inflexionWidth, height: inflexionWidth)
@@ -333,6 +370,13 @@ class PNLineChart: UIView{
                     pointPath.addLine(to: CGPoint(x: squareCenter.x - (inflexionWidth/2.0), y: squareCenter.y + (inflexionWidth/2.0)))
                     pointPath.close()
                     
+                    if(index == 1){
+                    let textLabel = UITextField(frame : CGRect(x: x - inflexionWidth/2.0 - 60, y: y - inflexionWidth/2.0 - 40, width: 120, height: 10))
+                    textPoint[0] = String(format: "%.3f",Double(controlIndex[1]))
+                    textPoint[1] = String(format: "%.3f",Double(controlIndex[2]))
+                    textLabel.text = "(" + textPoint[0] + "," + textPoint[1] + ")"
+                        self.addSubview(textLabel)}
+                    
                     if index != 0 {
                         // Calculate the point for line
                         let distance = CGFloat(sqrt(pow(x - lastX, 2.0) + pow(y - lastY, 2.0)))
@@ -341,21 +385,20 @@ class PNLineChart: UIView{
                         let x1 = x - (inflexionWidth / 2.0)
                         let y1 = y - (inflexionWidth / 2.0) / distance * (y - lastY)
                         
+                        if(index == 1){
+                           // progressLine.move(to: CGPoint(x: chartMargin * 2.0 + (CGFloat(index) * xLabelWidth), y: chartCavanHeight - (innerGrade * chartCavanHeight!)))
+                           // progressLine.addLine(to: CGPoint(x: x1, y: chartCavanHeight - (innerGrade * chartCavanHeight!)))
+                        }
+                        
                         progressLine.move(to: CGPoint(x: lastX1, y: lastY1))
                         progressLine.addLine(to: CGPoint(x: x1, y: y1))
                     }
                     
+                    
+                    //initialize starIndex
                     lastX = x
                     lastY = y
-                    
-                // Triangle Style Point
-                case .Triangle:
-                    if index != 0 {
-                        progressLine.addLine(to: CGPoint(x: x, y: y))
-                    }
-                    
-                    progressLine.move(to: CGPoint(x: x, y: y))
-                    
+                
                 default:
                     if index != 0 {
                         progressLine.addLine(to: CGPoint(x: x, y: y))
@@ -364,6 +407,7 @@ class PNLineChart: UIView{
                     progressLine.move(to: CGPoint(x: x, y: y))
                 }
                 linePointsArray.add(PNValue(point: CGPoint(x: x, y: y)))
+            }
             }
             
             pathPoints.add(linePointsArray)
