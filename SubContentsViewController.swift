@@ -1,11 +1,3 @@
-//
-//  SubContentsViewController.swift
-//  SlideMenuControllerSwift
-//
-//  Created by Yuji Hato on 11/8/15.
-//  Copyright © 2015 Yuji Hato. All rights reserved.
-//
-
 import UIKit
 
 class SubContentsViewController: UIViewController {
@@ -46,12 +38,14 @@ class SubContentsViewController: UIViewController {
     //two stright lines intersection, find optimal(theshold 0.4) not reversed yet
     //get thate and optimal index point
     func findTheta(_ xs : [Double]) -> (Double , Int){
-        for i in 0...xs.count - 1{
+        if(xs.count > 2){
+        for i in 0...xs.count - 3{
             if(xs[i] - xs[i + 1] > 0.4 && xs[i + 1] > xs[i + 2]){
                 let resultArray : [Double] = Array(xs.prefix(i))
                 return (average(resultArray) , i)
             }
         }
+    }
         return (0.0 , 0)
     }
     
@@ -96,9 +90,9 @@ class SubContentsViewController: UIViewController {
         //delete untested pass
         //yLabel = yLabel.filter{ $0 != 0 }
         // since x-axis start from -0.3 , need reverse
-        yLabel = [log10(265.0),log10(259.0),log10(268.0),log10(215.0),log10(291.0),log10(265.0),log10(293.0),log10(229.0),log10(325.0),log10(203.0), log10(229.0),log10(216.0),log10(116.0), log10(65), log10(8) , log10(6) , 0 , 0 , 0]
+        //yLabel = [log10(136.0),log10(151), log10(150), log10(196), log10(152) , log10(196) ,log10(132) ,log10(199) ,log10(116) ,log10(178) ,log10(163) ,log10(172) ,log10(76) ,log10(17) ,0 , 0 , 0 , 0 , 0]
         
-        
+        //yLabel = [1.99,2.0, 2.0, 2.11, 2.07, 2.09 ,2.08 ,1.96 ,1.43 ,1.22,1.54 ,1.17,1.14 ,1.38 ,1 , 0 , 0 , 0 , 0]
         (theta,midIndex) = findTheta(yLabel)
         yLabel = yLabel.reversed()
         
@@ -159,8 +153,11 @@ class SubContentsViewController: UIViewController {
         })
         
         
-        
-        lineChart.chartData = [data, regressionData]
+        if (theta,midIndex) != (0.0 ,0){
+            lineChart.chartData = [data, regressionData]}
+        else {
+            lineChart.chartData = [data]
+        }
         lineChart.strokeChart(regressionIndex)
      
         // Change the chart you want to present here

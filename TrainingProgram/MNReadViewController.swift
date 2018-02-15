@@ -15,12 +15,17 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
     @IBOutlet weak var fontColor: UIPickerView!
     @IBOutlet weak var backColor: UIPickerView!
     @IBOutlet weak var watchDistance: UIPickerView!
+    @IBOutlet weak var testLanguage: UIPickerView!
+    
     let fontRow = ["黑色","黃色","紅色","白色"]
     let backRow =  ["白色","藍色","綠色","黑色"]
     let distanceRow = ["40cm", "33cm", "25cm"]
+    let languageRow = ["廣東話", "國語"]
+    
     var selectedFont = "黑色"
     var selectedBack = "白色"
     var selectedDistance = "40cm"
+    var selectedLanguage = "廣東話"
 
     
     
@@ -33,6 +38,8 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         self.backColor.delegate = self
         self.watchDistance.dataSource = self
         self.watchDistance.delegate = self
+        self.testLanguage.dataSource = self
+        self.testLanguage.delegate = self
         
 
         
@@ -50,6 +57,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
             vc.fontColor = self.selectedFont
             vc.backColor = self.selectedBack
             vc.watchDistance = self.selectedDistance
+            vc.testLanguage = self.selectedLanguage
         }        }
         
     
@@ -75,6 +83,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         if(pickerView == fontColor) {return fontRow.count}
         if(pickerView == watchDistance) {return distanceRow.count}
         if(pickerView == backColor) {return backRow.count}
+        if(pickerView == testLanguage) {return languageRow.count}
         else {return 0}
     }
     
@@ -82,6 +91,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         if(pickerView == fontColor) {return fontRow[row]}
         if(pickerView == watchDistance) {return distanceRow[row]}
         if(pickerView == backColor) {return backRow[row]}
+        if(pickerView == testLanguage) {return languageRow[row]}
         else {return "unsuccessful"}
     }
     
@@ -94,6 +104,10 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         
         if(pickerView == backColor){
         selectedBack = backRow[row] as String}
+        
+        if(pickerView == testLanguage){
+        selectedLanguage = languageRow[row] as String}
+        
         
     }
     

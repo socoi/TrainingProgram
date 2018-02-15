@@ -14,7 +14,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     // MARK: Properties
     
     //zh-HK广东话, zh普通话
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "zh-HK"))!
+    private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "zh-HK"))!
     
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     
@@ -41,8 +41,21 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
     public var distanceVary = Double() //  pass to resultView controller
-    public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77
+    public var testLanguage = String()
+    public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77\
+    public let readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶着五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待着","小汽車緩慢地穿過這個山洞",
+                               
+        "妹妹吃下弟弟幫忙買的餅乾","他在一家電影公司擔任秘書","小貓在畫紙上踩了幾個腳印","木馬是小朋友最喜歡的玩具","沒有人知道這是誰的萬花筒","小明把聽過的故事描述出來","我在動物園裏看到了大笨象","今年我班的足球隊實力很強","他父親叫他寫信給歐陽先生","老鼠冒着生命危險去找食物","他希望在假期裡多參加活動","小朋友最喜歡坐在摩天輪上","他給我們搖來了最平穩的船","一群小螞蟻緩慢地爬上山頂","星期六父親帶弟弟去騎木馬","我在討論中清楚地表達意見","她繼續守護早已長大的孩子","魔術師把大西瓜放在袋子裏","爸爸給我講了這樣一個故事",
+        
+        
+        "哥哥把小狗的腳印變成花朵", "叔叔開車帶我們去郊外遊玩","紫紅色的袋子裏有一張廢紙","小明最喜歡飯後吃一個水果","威風的獵人走到危險的森林","這本書介紹了基本語文知識","猴子在樹上靈活地爬來爬去","小馬帶他走進美麗的大花園","大家輪流介紹自己喜愛的歌","上星期姑姑送給我一盒糖果","李大文可以認識美麗的植物","小美在聽木結他發出的聲音","他獨自守着充滿回憶的房子","小朋友最喜歡上中國武術課","科學家做出一個風車的模型","地上還長着許多紅色的草莓","今年新設計的海報很有創意","故事說出小鳥從小就很勇敢","他們給父母一份特別的驚喜"
     
+    
+    
+    
+    ]
+    
+    public var testCases = Array<Int>() //chart case that have been tested
     
     
 
@@ -123,32 +136,18 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         }
     
+    
     public func testContent(number : Int ) -> String{
-        switch number{
-//        case 1: return "我们年纪很小就举行演奏会"
-        case 1: return "我們年紀很小就舉行演奏會"
-//        case 2: return "小鸟儿飞到我家屋前的树上"
-        case 2: return "小鳥兒飛到我家屋前的樹上"
-        case 3: return "昨天大表姐到醫院探望叔叔"
-        case 3: return "昨天大表姐到醫院探望叔叔"
-        case 4: return "我在摩天輪上看見藍天白雲"
-        case 5: return "媽媽每天給大文講一個故事"
-        case 6: return "這篇文章描述了新年的景象"
-        case 7: return "小妹妹還沒上學便開始認字"
-        case 8: return "張小華忘記把課室的門關上"
-        case 9: return "大文三歲已經開始創作詩歌"
-        case 10: return "花香引來各種各樣的小昆蟲"
-        case 11: return "打乒乓球是我愛的課外活動"
-        case 12: return "小朋友喜歡坐在旋轉木馬上"
-        case 13: return "辛勤工作的人應該受到尊重"
-        case 14: return "我學會用重複的句子來作詩"
-        case 15: return "大笨象帶着五隻小河馬過河"
-        case 16: return "姐姐和妹妹要做漂亮的花兒"
-        case 17: return "蜻蜓早就停在荷葉上面休息"
-        case 18: return "車站上的乘客焦急地等待着"
-        case 19: return "小汽車緩慢地穿過這個山洞"
-        default: return "Test Over"
+        let numCount = readingChart.count //57 reading cases
+        var arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
+        for _ in 1...57{
+            if(!testCases.contains(arrayKey)){
+                testCases.append(arrayKey)
+                break
+            }
+            else{ arrayKey = Int(arc4random_uniform(UInt32(numCount)))}
         }
+        return readingChart[testCases[number - 1]]
     }
     
     //after countdown start test automatically
@@ -348,12 +347,16 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         textView.backgroundColor = colors[backColor]
         distanceVary = distance[watchDistance]!
         
+        //language set
+        var language : [String:String] = [ "廣東話": "zh-HK", "國語": "zh-TW",]
+        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language[testLanguage]!))!
+        
         
     }
     
     
     //detect accuracy, whether continue()
-    //any three words exist -> pass
+    //any three words match -> pass
     public func findAccuracy(myNumber : Int) -> Int{
         testResults = testContent(number : myNumber)
         //var correctChar = Int()
@@ -492,6 +495,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             if(correctWords != 0 ){
                 timeSpent = log10(correctWords / timeSpent * 60)
             }
+            else { timeSpent = 0}
             self.timeSpent.append(timeSpent)
             textView.text = ""  
             
@@ -501,7 +505,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
                 recordButton.isHidden = true
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-
             }
             //or stop the test
             else{

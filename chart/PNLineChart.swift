@@ -181,12 +181,12 @@ class PNLineChart: UIView{
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchPoint(touches: touches as NSSet, withEvent: event!)
-        touchKeyPoint(touches: touches as NSSet, withEvent: event!)
+        //touchKeyPoint(touches: touches as NSSet, withEvent: event!)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchPoint(touches: touches as NSSet, withEvent: event!)
-        touchKeyPoint(touches: touches as NSSet, withEvent: event!)
+        //touchKeyPoint(touches: touches as NSSet, withEvent: event!)
     }
     
     func touchPoint(touches: NSSet, withEvent event: UIEvent) {
