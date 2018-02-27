@@ -35,27 +35,36 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     public var userName = String()
     public var timeRecord = Timer()
     public var countDownNumber = Int()
+    
+    //record that shown in subcontent controller
     public var timeSpent = Array<Double>()//attention! - > (correct number/test time) * 60
-    public var myTime = String()
+    public var costTime = Array<Double>() // test time
+    public var errorWord = Array<String>() //error words
+    public var errorNum =  Array<Int>() //error number
+    public var selectedChart = Array<String>() //random picked chart
+
+    
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
     public var distanceVary = Double() //  pass to resultView controller
     public var testLanguage = String()
     public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77\
-    public let readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶着五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待着","小汽車緩慢地穿過這個山洞",
+
+    
+    
+    
+    public let readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶著五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待著","小汽車緩慢地穿過這個山洞",
                                
-        "妹妹吃下弟弟幫忙買的餅乾","他在一家電影公司擔任秘書","小貓在畫紙上踩了幾個腳印","木馬是小朋友最喜歡的玩具","沒有人知道這是誰的萬花筒","小明把聽過的故事描述出來","我在動物園裏看到了大笨象","今年我班的足球隊實力很強","他父親叫他寫信給歐陽先生","老鼠冒着生命危險去找食物","他希望在假期裡多參加活動","小朋友最喜歡坐在摩天輪上","他給我們搖來了最平穩的船","一群小螞蟻緩慢地爬上山頂","星期六父親帶弟弟去騎木馬","我在討論中清楚地表達意見","她繼續守護早已長大的孩子","魔術師把大西瓜放在袋子裏","爸爸給我講了這樣一個故事",
+        "妹妹吃下弟弟幫忙買的餅乾","他在一家電影公司擔任秘書","小貓在畫紙上踩了幾個腳印","木馬是小朋友最喜歡的玩具","沒有人知道這是誰的萬花筒","小明把聽過的故事描述出來","我在動物園裏看到了大笨象","今年我班的足球隊實力很強","他父親叫他寫信給歐陽先生","老鼠冒著生命危險去找食物","他希望在假期裡多參加活動","小朋友最喜歡坐在摩天輪上","他給我們搖來了最平穩的船","一群小螞蟻緩慢地爬上山頂","星期六父親帶弟弟去騎木馬","我在討論中清楚地表達意見","她繼續守護早已長大的孩子","魔術師把大西瓜放在袋子裏","爸爸給我講了這樣一個故事",
         
         
-        "哥哥把小狗的腳印變成花朵", "叔叔開車帶我們去郊外遊玩","紫紅色的袋子裏有一張廢紙","小明最喜歡飯後吃一個水果","威風的獵人走到危險的森林","這本書介紹了基本語文知識","猴子在樹上靈活地爬來爬去","小馬帶他走進美麗的大花園","大家輪流介紹自己喜愛的歌","上星期姑姑送給我一盒糖果","李大文可以認識美麗的植物","小美在聽木結他發出的聲音","他獨自守着充滿回憶的房子","小朋友最喜歡上中國武術課","科學家做出一個風車的模型","地上還長着許多紅色的草莓","今年新設計的海報很有創意","故事說出小鳥從小就很勇敢","他們給父母一份特別的驚喜"
-    
-    
-    
+        "哥哥把小狗的腳印變成花朵", "叔叔開車帶我們去郊外遊玩","紫紅色的袋子裏有一張廢紙","小明最喜歡飯後吃一個水果","威風的獵人走到危險的森林","這本書介紹了基本語文知識","猴子在樹上靈活地爬來爬去","小馬帶他走進美麗的大花園","大家輪流介紹自己喜愛的歌","上星期姑姑送給我一盒糖果","李大文可以認識美麗的植物","小美在聽木結他發出的聲音","他獨自守著充滿回憶的房子","小朋友最喜歡上中國武術課","科學家做出一個風車的模型","地上還長著許多紅色的草莓","今年新設計的海報很有創意","故事說出小鳥從小就很勇敢","他們給父母一份特別的驚喜"
     
     ]
     
-    public var testCases = Array<Int>() //chart case that have been tested
+    public var testCases = Array<Int>() //存放随机选取的readingchart的编号，避免重复
+
     
     
 
@@ -241,6 +250,12 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     
     public func stopTest(){
         
+        var s1 = String()
+        var s2 = String()
+        var s3 = String()
+        var s4 = String()
+        var s5 = String()
+        
         //store data
         let stopTime = Date()
         let dateformatter = DateFormatter()
@@ -260,6 +275,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             let userName = Expression<String>("userName")
             let testTime = Expression<String>("testTime")
             let distanceVary = Expression<Double>("distanceVary")
+        
+        // updated information
+        
+        
         
         
         let testPass = self.timeSpent.count
@@ -287,12 +306,42 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
      
         //since do not know how many testPass, insert primary, then update timespent
         for number in 1 ... testPass {
-            self.myTime = "timeSpent" + "\(number)"
-            let pass = Expression<Double>(self.myTime)
-            let update = selectedRow.update(
-               pass <- self.timeSpent[number - 1]
+            s1 = "timeSpent" + "\(number)"
+            s2 = "costTime" + "\(number)"
+            s3 = "readChart" + "\(number)"
+            s4 = "errorWord" + "\(number)"
+            s5 = "errorNum" + "\(number)"
+            let s11 = Expression<Double>(s1)
+            let s12 = Expression<Double>(s2)
+            let s13 = Expression<String>(s3)
+            let s14 = Expression<String>(s4)
+            let s15 = Expression<Int>(s5)
+            
+            
+            let update1 = selectedRow.update(
+                s11 <- self.timeSpent[number - 1]
             )
-            try! db.run(update)
+            try! db.run(update1)
+            
+            let update2 = selectedRow.update(
+                s12 <- self.costTime[number - 1]
+            )
+            try! db.run(update2)
+            
+            let update3 = selectedRow.update(
+                s13 <- self.selectedChart[number - 1]
+            )
+            try! db.run(update3)
+            
+            let update4 = selectedRow.update(
+                s14 <- self.errorWord[number - 1]
+            )
+            try! db.run(update4)
+            
+            let update5 = selectedRow.update(
+                s15 <- self.errorNum[number - 1]
+            )
+            try! db.run(update5)
             
         }
 
@@ -340,7 +389,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         
         let distance : [String:Double] = ["40cm": 1, "33cm":
-            1.21, "25cm":1.6]
+            1.21, "25cm":1.6 , "20cm":2]
         
         //color and distance
         textView.textColor = colors[fontColor]
@@ -357,7 +406,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     
     //detect accuracy, whether continue()
     //any three words match -> pass
-    public func findAccuracy(myNumber : Int) -> Int{
+    //return number of correct words and its contents
+    public func findAccuracy(myNumber : Int) -> (Int,String) {
+        //error words
+        var filterWords = ""
         testResults = testContent(number : myNumber)
         //var correctChar = Int()
         var re1Arr = Array<String>()//input words
@@ -365,7 +417,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         //user say nothing -> equal to before
         if(inputResults == ""){
-            return 0
+            return (0,"")
         }
         
         for i in inputResults.characters{
@@ -385,7 +437,12 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
 //        }
         
         let commonWords = re1Arr.filter(re2Arr.contains)
-        return commonWords.count
+        for a in re2Arr{
+            if(!commonWords.contains(a)){
+                filterWords += a
+            }
+        }
+        return (commonWords.count , filterWords)
 }
     
 
@@ -486,21 +543,37 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             //record the time interval(according to definition)
             let nowTime = Date()
             var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
-            let correctWords = Double(findAccuracy(myNumber: testNumbers + 1))
+            let (correctWords, filterWords) = findAccuracy(myNumber: testNumbers + 1)
+            
+            
+            //--------------------------------------------------------------record for databse
+            
+            //errorWord
+            errorWord.append(filterWords)
+            
+            //erroNumber
+            errorNum.append(12 - correctWords)
+            
+            //timecost
+            costTime.append(timeSpent)
+            
+            //testContent(random pick)
+            selectedChart.append(testContent(number : testNumbers + 1))
+            
             
             //special case
             if(timeSpent == 0){
                 self.timeSpent.append(timeSpent)
             }
             if(correctWords != 0 ){
-                timeSpent = log10(correctWords / timeSpent * 60)
+                timeSpent = log10(Double(correctWords) / timeSpent * 60)
             }
             else { timeSpent = 0}
             self.timeSpent.append(timeSpent)
             textView.text = ""  
             
             //previous test OK -> next test
-            if(self.findAccuracy(myNumber: testNumbers + 1) > 1){
+            if(correctWords > 1){
                 testNumbers += 1
                 recordButton.isHidden = true
                 self.countDownNumber = 4

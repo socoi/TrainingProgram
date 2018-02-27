@@ -19,7 +19,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
     
     let fontRow = ["黑色","黃色","紅色","白色"]
     let backRow =  ["白色","藍色","綠色","黑色"]
-    let distanceRow = ["40cm", "33cm", "25cm"]
+    let distanceRow = ["40cm", "33cm", "25cm", "20cm"]
     let languageRow = ["廣東話", "國語"]
     
     var selectedFont = "黑色"

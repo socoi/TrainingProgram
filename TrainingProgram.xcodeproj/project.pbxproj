@@ -65,6 +65,7 @@
 		63C78B141E5351C500479725 /* PNPieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B091E5351C500479725 /* PNPieChart.swift */; };
 		63C78B151E5351C500479725 /* PNPieChartDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B0A1E5351C500479725 /* PNPieChartDataItem.swift */; };
 		63C78B161E5351C500479725 /* PNValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B0B1E5351C500479725 /* PNValue.swift */; };
+		63C928AA20444C5200FF3DDC /* Cells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C928A920444C5200FF3DDC /* Cells.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -145,6 +146,7 @@
 		63C78B091E5351C500479725 /* PNPieChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNPieChart.swift; path = chart/PNPieChart.swift; sourceTree = "<group>"; };
 		63C78B0A1E5351C500479725 /* PNPieChartDataItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNPieChartDataItem.swift; path = chart/PNPieChartDataItem.swift; sourceTree = "<group>"; };
 		63C78B0B1E5351C500479725 /* PNValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNValue.swift; path = chart/PNValue.swift; sourceTree = "<group>"; };
+		63C928A920444C5200FF3DDC /* Cells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cells.swift; sourceTree = SOURCE_ROOT; };
 		7539A46D1CE7A57600505E8B /* TrainingProgram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrainingProgram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE61EFB895604315C9C2113B /* Pods-TrainingProgram.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrainingProgram.release.xcconfig"; path = "Pods/Target Support Files/Pods-TrainingProgram/Pods-TrainingProgram.release.xcconfig"; sourceTree = "<group>"; };
 		B56B3B031CEB85E1001766E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 		639F34BC1E52D38E00D0F47C /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				63C928A920444C5200FF3DDC /* Cells.swift */,
 				639F34D31E52E69800D0F47C /* Extension */,
 				639F34D11E52E64B00D0F47C /* View */,
 				639F34C71E52D76D00D0F47C /* SlideMenuControllerSwift.xcdatamodeld */,
@@ -477,6 +480,7 @@
 				63C78B161E5351C500479725 /* PNValue.swift in Sources */,
 				639F34BB1E52D32D00D0F47C /* LeftViewController.swift in Sources */,
 				639F34A91E52D19C00D0F47C /* ImageHeaderView.swift in Sources */,
+				63C928AA20444C5200FF3DDC /* Cells.swift in Sources */,
 				639F34511E517DE700D0F47C /* AppDelegate.swift in Sources */,
 				63C78B131E5351C500479725 /* PNLineChartDataItem.swift in Sources */,
 				63C78B121E5351C500479725 /* PNLineChartData.swift in Sources */,
