@@ -28,7 +28,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     
     let fullScreenSize = UIScreen.main.bounds.size
     
-    private var testNumbers  = Int()//test cases number
+    private var testNumbers  = Int()//test cases number start from 0
     private var testResults = String()//test contents
     private var inputResults = String()//speak contents
     public var beforeTime = Date()//starting time
@@ -50,6 +50,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     public var distanceVary = Double() //  pass to resultView controller
     public var testLanguage = String()
     public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77\
+    public var testMode = String()
 
     
     
@@ -91,8 +92,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         self.textView.layer.setAffineTransform(CGAffineTransform(scaleX: CGFloat(effectiveScale), y: CGFloat(effectiveScale)))
         CATransaction.commit()
     }
-    
-    
     
     // MARK: UIViewController
     
@@ -173,6 +172,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             //prepare for test
             recordButton.isHidden = true
             self.textView.text = ""
+            
             recordButtonTapped()
 
         }
@@ -262,7 +262,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         dateformatter.dateStyle = .full
         dateformatter.timeStyle = .short
         let dateString = dateformatter.string(from : stopTime)
-        let resultCell = self.userName + "   " + dateString
+        let resultCell = self.userName + "   " + dateString + " (" + self.testMode + ")"
         
             let path = NSSearchPathForDirectoriesInDomains(
                 .documentDirectory, .userDomainMask, true
@@ -470,38 +470,39 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         guard let recognitionRequest = recognitionRequest else { fatalError("Unable to created a SFSpeechAudioBufferRecognitionRequest object") }
         
         // Configure request so that results are returned before audio recording is finished
-        recognitionRequest.shouldReportPartialResults = true
+        recognitionRequest.shouldReportPartialResults = false  //true
         
         // A recognition task represents a speech recognition session.
         // We keep a reference to the task so that it can be cancelled.
-        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
+        //recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest, resultHandler:{ (result, error) in
             var isFinal = false
         
             
         //user say nothing
-        self.inputResults = ""
+            self.inputResults = ""
             
             if let result = result {
                 //here is the result
-                
                 self.inputResults = result.bestTranscription.formattedString
                 isFinal = result.isFinal
-                
-                
+
             }
-            
+
             if error != nil || isFinal {
                 self.audioEngine.stop()
                 inputNode.removeTap(onBus: 0)
-                
+
                 self.recognitionRequest = nil
                 self.recognitionTask = nil
-                
+
                 self.recordButton.isEnabled = true
                 self.recordButton.setTitle("開始錄音", for: [])
             }
             
-        }
+            self.stopRecord()
+
+        })
         
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
@@ -538,57 +539,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
             
-           
-            
-            //record the time interval(according to definition)
-            let nowTime = Date()
-            var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
-            let (correctWords, filterWords) = findAccuracy(myNumber: testNumbers + 1)
-            
-            
-            //--------------------------------------------------------------record for databse
-            
-            //errorWord
-            errorWord.append(filterWords)
-            
-            //erroNumber
-            errorNum.append(12 - correctWords)
-            
-            //timecost
-            costTime.append(timeSpent)
-            
-            //testContent(random pick)
-            selectedChart.append(testContent(number : testNumbers + 1))
-            
-            
-            //special case
-            if(timeSpent == 0){
-                self.timeSpent.append(timeSpent)
-            }
-            if(correctWords != 0 ){
-                timeSpent = log10(Double(correctWords) / timeSpent * 60)
-            }
-            else { timeSpent = 0}
-            self.timeSpent.append(timeSpent)
-            textView.text = ""  
-            
-            //previous test OK -> next test
-            if(correctWords > 1){
-                testNumbers += 1
-                recordButton.isHidden = true
-                self.countDownNumber = 4
-                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-            }
-            //or stop the test
-            else{
-//                testNumbers += 1
-//                recordButton.isHidden = true
-//                self.countDownNumber = 4
-//                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-                stopTest()
-            }
-            
-            
         } else {
             
             //start to record the time
@@ -600,6 +550,107 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         }
     }
     
+    func manualInsert(timeSpent : Double){
+        let optionMenu = UIAlertController(title: "輸入錯字數目", message: " ", preferredStyle: .alert)
+
+        
+        optionMenu.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "請輸入错字数"
+            textField.clearButtonMode = .whileEditing
+        }
+        
+        let okAction = UIAlertAction(title: "確認", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            
+            let login = (optionMenu.textFields?.first)! as UITextField
+            
+            if (login.text != ""){
+                let error = Int(login.text!)
+                self.recordButton.isHidden = true
+                self.errorNum[self.testNumbers] = error! //record error number words
+                self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
+                //prepare for the test
+                self.countDownNumber = 4
+                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                self.testNumbers += 1
+
+            }
+            
+        })
+        
+        let cancelAction = UIAlertAction(title: "停止測試", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            let login = (optionMenu.textFields?.first)! as UITextField
+            self.recordButton.isHidden = true
+            self.errorNum[self.testNumbers] = Int(login.text!)!
+            self.stopTest()
+        })
+        
+        optionMenu.popoverPresentationController?.sourceView = textView
+        let t1 = fullScreenSize.height
+        let t2 = fullScreenSize.width
+        
+        optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:20,height:20)
+        optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+        optionMenu.addAction(okAction)
+        optionMenu.addAction(cancelAction)
+        self.present(optionMenu, animated: true, completion: nil)
+    }
     
+    
+    func stopRecord(){
+        
+        //record the time interval(according to definition)
+        let nowTime = Date()
+        var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
+        let (correctWords, filterWords) = findAccuracy(myNumber: testNumbers + 1)
+        
+        
+        //--------------------------------------------------------------record for databse
+        
+        //errorWord
+        errorWord.append(filterWords)
+        
+        //erroNumber
+        errorNum.append(12 - correctWords)
+        
+        //timecost
+        costTime.append(timeSpent)
+        
+        //testContent(random pick)
+        selectedChart.append(testContent(number : testNumbers + 1))
+        
+        
+        //special case
+        if(timeSpent == 0){
+            self.timeSpent.append(timeSpent)
+        }
+        if(correctWords != 0 ){
+            timeSpent = log10(Double(correctWords) / timeSpent * 60)
+        }
+        else { timeSpent = 0}
+        
+        self.timeSpent.append(timeSpent)
+        textView.text = ""
+        
+        // 手动模式下输入错字，重新计算timespent
+        if(testMode == "手動"){
+            manualInsert(timeSpent: costTime[self.testNumbers])
+        }
+        
+        if(testMode == "自動"){
+            if(correctWords > 1){
+                testNumbers += 1
+                recordButton.isHidden = true
+                self.countDownNumber = 4
+                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+            }
+                
+            else{
+                stopTest()
+            }}
+        
+    }
 }
 

@@ -1,4 +1,4 @@
-# SpeakToMe: Using Speech Recognition with AVAudioEngine
+# Test
 
 Shows how to use SFSpeechRecognizer with AVAudioEngine to record what a user says and transcribe it into text.
 
@@ -12,4 +12,3 @@ Xcode 8.0 or later; iOS 10.0 SDK or later
 
 iOS 10.0 or later on an iOS device
 
-Copyright (C) 2016 Apple Inc. All rights reserved.

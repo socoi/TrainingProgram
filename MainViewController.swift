@@ -134,6 +134,7 @@ class MainViewController: UIViewController {
         let errorNum17 = Expression<Int>("errorNum17")
         let errorNum18 = Expression<Int>("errorNum18")
         let errorNum19 = Expression<Int>("errorNum19")
+        let testMode = Expression<String>("testMode")
 
 
 
@@ -252,20 +253,21 @@ class MainViewController: UIViewController {
             t.column(errorNum17, defaultValue: -99)
             t.column(errorNum18, defaultValue: -99)
             t.column(errorNum19, defaultValue: -99)
+            t.column(testMode, defaultValue: "None")
          
         })
         
         
-//        //testData
+////        //testData
 //        let insert1 = testResults.insert(
 //            details <- "first one  1970",
 //            userName <- "first one",
 //            testTime <- "1970",
 //            timeSpent1 <- 145.234
-//            
+//
 //        )
 //        try! db.run(insert1)
-//        
+////
 //        let insert2 = testResults.insert(
 //            details <- "second one  1980",
 //            userName <- "first one",
