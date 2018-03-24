@@ -6,11 +6,13 @@
 //  Copyright © 2017年 All rights reserved.
 //
 
+
+
 import UIKit
 import Speech
 import SQLite
 
-public class Test1: UIViewController, SFSpeechRecognizerDelegate {
+public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     // MARK: Properties
     
     //zh-HK广东话, zh普通话
@@ -32,9 +34,17 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     private var testResults = String()//test contents
     private var inputResults = String()//speak contents
     public var beforeTime = Date()//starting time
-    public var userName = String()
     public var timeRecord = Timer()
     public var countDownNumber = Int()
+    
+    public var userName = String()
+    public var userId = String()
+    public var userSex = String()
+    public var userAge = Int()
+    public var userBirth = String()
+    
+
+
     
     //record that shown in subcontent controller
     public var timeSpent = Array<Double>()//attention! - > (correct number/test time) * 60
@@ -42,17 +52,35 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     public var errorWord = Array<String>() //error words
     public var errorNum =  Array<Int>() //error number
     public var selectedChart = Array<String>() //random picked chart
-
+    public var testCases = Array<Int>() //随机选取的readingchart的编号
+    public var testedCases = Array<Int>() //已测试的redingchart的编号
     
+
+
+    public var mnread_num = 1  //test1 （19个句子） test2(19个句子) 彼此都不重复
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
     public var distanceVary = Double() //  pass to resultView controller
-    public var testLanguage = String()
+    public var testLanguage = String() //普通话或者粤语
     public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77\
-    public var testMode = String()
+    public var testMode = String()  //自动或手动
 
     
+    let startMenu = UIAlertController(title:"" , message: "", preferredStyle: .alert) //初始对话框，需要输入用户信息
+    //选择框里的内容设计
+    public let agepickView:UIPickerView = UIPickerView()
+    public let sexpickView:UIPickerView = UIPickerView()
+    public let errpickView:UIPickerView = UIPickerView()
+    public var agetextField = UITextField()
+    public var sextextField = UITextField()
+    public var errtextField = UITextField()
+    public let sexcontent = ["","男","女"]
+    public let agecontent = Array(5...100)
+    public let errcontent = Array(0...12)
+   
+
+
     
     
     public let readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶著五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待著","小汽車緩慢地穿過這個山洞",
@@ -64,10 +92,56 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     
     ]
     
-    public var testCases = Array<Int>() //存放随机选取的readingchart的编号，避免重复
-
     
     
+    
+  
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int {return 1}
+    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if(pickerView == agepickView){
+            return agecontent.count
+        }
+        if(pickerView == sexpickView){
+            return sexcontent.count
+        }
+        if(pickerView == errpickView){
+            return errcontent.count
+        }
+        return(0)
+    }
+    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if(pickerView == agepickView){
+            return String(agecontent[row])
+        }
+        if(pickerView == sexpickView){
+            return sexcontent[row]
+        }
+        if(pickerView == errpickView){
+            return String(errcontent[row])
+        }
+        return("error")
+    }
+    
+    public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if(pickerView == agepickView){
+            agetextField.text! = String(agecontent[row])
+        }
+        if(pickerView == sexpickView){
+            sextextField.text! =  sexcontent[row]
+        }
+        if(pickerView == errpickView){
+            errtextField.text! =  String(errcontent[row])
+        }
+        
+    }
+    
+    //birth selected
+    func datePickerValueChanged(sender:UIDatePicker) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeStyle = DateFormatter.Style.none
+        self.startMenu.textFields?.last?.text = dateFormatter.string(from: sender.date)
+    }
 
     
     // This delegate method is called every time the face recognition has detected something (including change)
@@ -93,28 +167,99 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         CATransaction.commit()
     }
     
-    // MARK: UIViewController
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        let attributedString = NSAttributedString(string: "個人信息", attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
+            ])
         
-        let optionMenu = UIAlertController(title: "测试", message: "登錄", preferredStyle: .alert)
+        let height:NSLayoutConstraint = NSLayoutConstraint(item: startMenu.view, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: self.view.frame.height * 0.80)
+        startMenu.setValue(attributedString, forKey: "attributedTitle")
+        startMenu.view.addConstraint(height)
+
         
-        optionMenu.addTextField {
+        startMenu.addTextField {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "請輸入用戶名"
+            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            textField.addConstraint(heightConstraint)
+            textField.placeholder = "輸入id"
+            textField.font = UIFont.systemFont(ofSize: 30)
             textField.clearButtonMode = .whileEditing
 
         }
         
-        let okAction = UIAlertAction(title: "開始", style: .default, handler: {
+        startMenu.addTextField {
+            (textField: UITextField!) -> Void in
+            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            textField.addConstraint(heightConstraint)
+            textField.placeholder = "輸入姓名"
+            textField.font = UIFont.systemFont(ofSize: 30)
+            textField.clearButtonMode = .whileEditing
+            
+        }
+        
+        startMenu.addTextField {
+            (textField: UITextField!) -> Void in
+            self.sextextField = textField
+            let heightConstraint = NSLayoutConstraint(item: self.sextextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            self.sextextField.addConstraint(heightConstraint)
+            self.sextextField.placeholder = "輸入性別"
+            self.sextextField.font = UIFont.systemFont(ofSize: 30)
+            self.sextextField.clearButtonMode = .whileEditing
+            self.sextextField.inputView = self.sexpickView
+            
+        }
+        
+        startMenu.addTextField {
+            (textField: UITextField!) -> Void in
+            self.agetextField = textField
+            let heightConstraint = NSLayoutConstraint(item: self.agetextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            self.agetextField.addConstraint(heightConstraint)
+            self.agetextField.placeholder = "輸入年齡"
+            self.agetextField.font = UIFont.systemFont(ofSize: 30)
+            self.agetextField.clearButtonMode = .whileEditing
+            self.agetextField.inputView = self.agepickView
+
+
+            
+        }
+        
+        startMenu.addTextField {
+            (textField: UITextField!) -> Void in
+            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            textField.addConstraint(heightConstraint)
+            textField.placeholder = "輸入出生日期"
+            textField.font = UIFont.systemFont(ofSize: 30)
+            textField.clearButtonMode = .whileEditing
+            
+            let datePickerView:UIDatePicker = UIDatePicker()
+            datePickerView.datePickerMode = UIDatePickerMode.date
+            textField.inputView = datePickerView
+            datePickerView.addTarget(self, action: #selector(self.datePickerValueChanged), for: UIControlEvents.valueChanged)
+            
+        }
+        
+    
+        
+        let okAction = UIAlertAction(title: "開始測試", style: .default, handler: {
             (alert: UIAlertAction!) -> Void in
             
-            let login = (optionMenu.textFields?.first)! as UITextField
             
-            if (login.text != ""){
-            self.userName = login.text!
+            let login  = self.startMenu.textFields
+            let userid = login![0] as UITextField
+            let username = login![1] as UITextField
+            let usersex = login![2] as UITextField
+            let userage = login![3] as UITextField
+            let userbirth = login![4] as UITextField
+
+            if (userid.text != "") && (usersex.text != "") && (userage.text != "") && (userbirth.text != "") && (username.text != ""){
+            self.userName = username.text!
+            self.userId = userid.text!
+            self.userSex = usersex.text!
+            self.userAge = Int(userage.text!)!
+            self.userBirth = userbirth.text!
             
             //prepare for the test
             self.countDownNumber = 4
@@ -123,7 +268,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
 
         })
         
-        let cancelAction = UIAlertAction(title: "取消", style: .default, handler: {
+        let cancelAction = UIAlertAction(title: "返回", style: .default, handler: {
             (alert: UIAlertAction!) -> Void in
             
             //return the main page
@@ -131,16 +276,18 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             
         })
         
+   
         
-        optionMenu.popoverPresentationController?.sourceView = textView
+        
+        startMenu.popoverPresentationController?.sourceView = textView
         let t1 = fullScreenSize.height
         let t2 = fullScreenSize.width
         
-        optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:20,height:20)
-        optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-        optionMenu.addAction(okAction)
-        optionMenu.addAction(cancelAction)
-        self.present(optionMenu, animated: true, completion: nil)
+        startMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:500,height:500)
+        startMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+        startMenu.addAction(okAction)
+        startMenu.addAction(cancelAction)
+        self.present(startMenu, animated: true, completion: nil)
         
         }
     
@@ -149,8 +296,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         let numCount = readingChart.count //57 reading cases
         var arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
         for _ in 1...57{
-            if(!testCases.contains(arrayKey)){
+             //存放第一次测试取的编号，保证两次测试没有相同内容
+            if(!testCases.contains(arrayKey) && !testedCases.contains(arrayKey)){
                 testCases.append(arrayKey)
+                testedCases.append(arrayKey)
                 break
             }
             else{ arrayKey = Int(arc4random_uniform(UInt32(numCount)))}
@@ -248,48 +397,65 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         }
     }
     
-    public func stopTest(){
+    
+    
+    public func stopTestUpdate(Times:Int){
         
+        //第一次还是第二次测试
+        self.mnread_num = Times
+        
+        
+        //测试中需要记录的5个数据
         var s1 = String()
         var s2 = String()
         var s3 = String()
         var s4 = String()
         var s5 = String()
         
+        
         //store data
         let stopTime = Date()
         let dateformatter = DateFormatter()
-        dateformatter.dateStyle = .full
+        dateformatter.dateStyle = .short
         dateformatter.timeStyle = .short
         let dateString = dateformatter.string(from : stopTime)
-        let resultCell = self.userName + "   " + dateString + " (" + self.testMode + ")"
+        //let resultCell = self.userName + "   " + dateString + " (" + self.testMode + ")"
+        var resultCell = self.userId + "__" + dateString + "__"
+        resultCell = resultCell + "test"  + String(self.mnread_num) + "__" + self.testMode
         
-            let path = NSSearchPathForDirectoriesInDomains(
-                .documentDirectory, .userDomainMask, true
-                ).first!
-
-            let db = try! Connection("\(path)/db.sqlite3")
-            let testResults = Table("testResults")
-            let id = Expression<Int>("id")
-            let details  = Expression<String>("details")
-            let userName = Expression<String>("userName")
-            let testTime = Expression<String>("testTime")
-            let distanceVary = Expression<Double>("distanceVary")
+        let path = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory, .userDomainMask, true
+            ).first!
+        
+        let db = try! Connection("\(path)/db.sqlite3")
+        let testResults = Table("testResults")
+        let id = Expression<Int>("id")
+        let details  = Expression<String>("details")
+        let userName = Expression<String>("userName")
+        let testTime = Expression<String>("testTime")
+        let userId = Expression<String>("userid")
+        let userSex = Expression<String>("sex")
+        let userAge = Expression<Int>("age")
+        let userBirth = Expression<String>("birth")
+        let distanceVary = Expression<Double>("distanceVary")
+        let testCase = Expression<Int>("testCase") //第一次测试
         
         // updated information
-        
-        
-        
         
         let testPass = self.timeSpent.count
         
         let insert = testResults.insert(
             details <- resultCell,
             userName <- self.userName,
+            userId <- self.userId,
+            userSex <- self.userSex,
+            userAge <- self.userAge,
+            userBirth <- self.userBirth,
             testTime <- dateString,
-            distanceVary <- self.distanceVary
+            distanceVary <- self.distanceVary,
+            testCase <- self.mnread_num
         )
-         try! db.run(insert)
+        try! db.run(insert)
         
         
         // update timespent
@@ -303,7 +469,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             print(user[id])
         }
         
-     
+        
         //since do not know how many testPass, insert primary, then update timespent
         for number in 1 ... testPass {
             s1 = "timeSpent" + "\(number)"
@@ -344,22 +510,64 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             try! db.run(update5)
             
         }
-
-     
-        let optionMenu = UIAlertController(title: "測試結束", message: inputResults, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
-            (alert: UIAlertAction!) -> Void in
-            self.performSegue(withIdentifier: "Test1", sender: self)
-        })
-        optionMenu.addAction(okAction)
-        optionMenu.popoverPresentationController?.sourceView = textView
-        let t1 = fullScreenSize.height
-        let t2 = fullScreenSize.width
-        
-        optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
-        optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-        self.present(optionMenu, animated: true, completion: nil)
+    }
     
+    public func stopTest(){
+        
+        if(self.mnread_num == 1) //第一次测试结束继续
+        {
+        stopTestUpdate(Times: 1)
+        let optionMenu = UIAlertController(title: "第一次測試結束", message: inputResults, preferredStyle: .alert)
+//        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
+//                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
+//                ])
+//        optionMenu.setValue(attributedString, forKey: "continue")
+        let okAction = UIAlertAction(title: "開始第二次測試", style: .cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+
+            //清空之前记录
+            self.testNumbers = 0
+            self.timeSpent.removeAll()
+            self.costTime.removeAll()
+            self.errorWord.removeAll()
+            self.errorNum.removeAll()
+            self.selectedChart.removeAll()
+            self.testCases.removeAll()
+            
+            self.recordButton.isHidden = true
+            self.countDownNumber = 4
+            self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+            self.mnread_num += 1
+        })
+            optionMenu.addAction(okAction)
+            optionMenu.popoverPresentationController?.sourceView = textView
+            let t1 = fullScreenSize.height
+            let t2 = fullScreenSize.width
+            
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
+            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+            self.present(optionMenu, animated: true, completion: nil)
+            
+        }
+        
+        else{ //第二次全部测试结束
+            stopTestUpdate(Times: 2)
+            let optionMenu = UIAlertController(title: "測試結束", message: inputResults, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
+                (alert: UIAlertAction!) -> Void in
+                self.performSegue(withIdentifier: "Test1", sender: self)
+            })
+            
+            optionMenu.addAction(okAction)
+            optionMenu.popoverPresentationController?.sourceView = textView
+            let t1 = fullScreenSize.height
+            let t2 = fullScreenSize.width
+            
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
+            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+            self.present(optionMenu, animated: true, completion: nil)
+        }
+        
     }
     
 
@@ -367,6 +575,18 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //pickview
+        agepickView.delegate = self
+        sexpickView.delegate = self
+        agepickView.dataSource = self
+        sexpickView.dataSource = self
+        errpickView.delegate = self
+        errpickView.dataSource = self
+        agepickView.selectRow(45, inComponent:0, animated:true)
+        sexpickView.selectRow(0, inComponent:0, animated:true)
+        errpickView.selectRow(0, inComponent:0, animated:true)
+
         
         
         // Disable the record buttons until authorization has been granted.
@@ -551,13 +771,26 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
     }
     
     func manualInsert(timeSpent : Double){
-        let optionMenu = UIAlertController(title: "輸入錯字數目", message: " ", preferredStyle: .alert)
+        let optionMenu = UIAlertController(title: "", message: "", preferredStyle: .alert)
 
+        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
+            ])
+        
+        optionMenu.setValue(attributedString, forKey: "attributedTitle")
+        
         
         optionMenu.addTextField {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "請輸入错字数"
-            textField.clearButtonMode = .whileEditing
+            self.errtextField = textField
+            let heightConstraint = NSLayoutConstraint(item: self.errtextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+            self.errtextField.addConstraint(heightConstraint)
+            self.errtextField.font = UIFont.systemFont(ofSize: 30)
+            self.errtextField.placeholder = "請輸入错字数"
+            self.errtextField.clearButtonMode = .whileEditing
+            self.errtextField.text! = "0"
+            self.errtextField.inputView = self.errpickView
+            
         }
         
         let okAction = UIAlertAction(title: "確認", style: .default, handler: {
@@ -568,7 +801,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
             if (login.text != ""){
                 let error = Int(login.text!)
                 self.recordButton.isHidden = true
-                self.errorNum[self.testNumbers] = error! //record error number words
+                self.errorNum[self.testNumbers] = error! //手动计入错字数
                 self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
                 //prepare for the test
                 self.countDownNumber = 4
@@ -581,6 +814,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         let cancelAction = UIAlertAction(title: "停止測試", style: .default, handler: {
             (alert: UIAlertAction!) -> Void in
+    
             let login = (optionMenu.textFields?.first)! as UITextField
             self.recordButton.isHidden = true
             self.errorNum[self.testNumbers] = Int(login.text!)!
@@ -598,7 +832,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         self.present(optionMenu, animated: true, completion: nil)
     }
     
-    
+    //停止后记录数据
     func stopRecord(){
         
         //record the time interval(according to definition)
@@ -608,6 +842,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate {
         
         
         //--------------------------------------------------------------record for databse
+        
         
         //errorWord
         errorWord.append(filterWords)

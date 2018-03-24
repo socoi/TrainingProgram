@@ -212,6 +212,15 @@ extension ResultViewController : UITableViewDelegate {
         let errorNum18 = Expression<Int>("errorNum18")
         let errorNum19 = Expression<Int>("errorNum19")
         
+        let userid = Expression<String>("userid")      //给测试人员的独一id
+        let sex = Expression<String>("sex")
+        let age = Expression<Int>("age")
+        let birth = Expression<String>("birth")
+        let userName = Expression<String>("userName")  //用户姓名
+        let testTime = Expression<String>("testTime")  //测试当时的时间
+        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+
+        
         
 //        //test
 //        print(self.mainContens)
@@ -340,6 +349,15 @@ extension ResultViewController : UITableViewDelegate {
             subContentsVC.errorWord.append(user[errorWord17])
             subContentsVC.errorWord.append(user[errorWord18])
             subContentsVC.errorWord.append(user[errorWord19])
+            
+            subContentsVC.userID = user[userid]
+            subContentsVC.userSex = user[sex]
+            subContentsVC.userAge = user[age]
+            subContentsVC.userBirth = user[birth]
+            subContentsVC.userName = user[userName]
+            subContentsVC.testTime = user[testTime]
+            subContentsVC.testCase = user[testCase]
+            subContentsVC.distanceVary = user[distanceVary]
      }
         self.navigationController?.pushViewController(subContentsVC, animated: true)
     }

@@ -27,7 +27,7 @@
                                 <color key="backgroundColor" red="0.94104245412159471" green="1" blue="0.95833793766846576" alpha="0.59666593309859151" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sdq-ce-kIf" userLabel="spreadsheetView" customClass="SpreadsheetView" customModule="SpreadsheetView">
-                                <rect key="frame" x="20" y="60" width="1326" height="337"/>
+                                <rect key="frame" x="20" y="49" width="1326" height="401"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>

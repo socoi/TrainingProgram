@@ -7,6 +7,8 @@
 import UIKit
 import SpreadsheetView
 
+
+
 class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, SpreadsheetViewDelegate {
 
     
@@ -22,48 +24,56 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
 
     public var regressionLabel = [Double]()
     public var xLabel = [String]()
-    public var xValueLabel = [Double]()
-    public var xValue = [Double]()
+    public var xValueLabel = [Double]() // 处理后的x值(正负方向公式不同)
+    public var xValue = [Double]() //从左到右坐标x的值(Double)
     public var theta = Double()
     public var regressionIndex = [Double]()
     public var midIndex = Int()
     @IBOutlet weak var mnreadChart: UIView!
     @IBOutlet weak var spreadsheetView: SpreadsheetView!
     
+    public var userName = String()
+    public var userID = String()
+    public var userAge = Int()
+    public var userSex = String()
+    public var userBirth = String()
+    public var testTime = String()
+    public var testCase = Int()
+    
     
     let rows = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"]
-    let columns = ["完成時間", "正確句子", "測試錯字", "錯字數目"]
+    let columns = ["完成時間", "正確句子", "測試錯字", "錯字數目", "LogMar"]
     
                      
     let evenRowColor = UIColor(red: 0.914, green: 0.914, blue: 0.906, alpha: 1)
     let oddRowColor: UIColor = .white
     
     var inputData = [
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""],
-        ["", "", "", ""]
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["", "", "", "", ""]
     ]
     
     
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, heightForRow row: Int) -> CGFloat {
         if case 0 = row {
-            return 24
+            return 120 //24
         } else if case 1 = row {
             return 32
         } else if case 2 = row{
@@ -72,8 +82,11 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         else if case 5 = row {
             return 30
         }
+        else if case 6 = row {
+            return 30
+        }
         else {
-            return 100
+            return 70
         }
     }
     
@@ -104,10 +117,61 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     }
     
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, cellForItemAt indexPath: IndexPath) -> Cell? {
-//        if case (1...(dates.count + 1), 0) = (indexPath.column, indexPath.row) {
-//            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
-//            cell.label.text = dates[indexPath.column - 1]
-//            return cell}
+        if case (1, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "ID: " + userID
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            //cell.frame = UIEdgeInsetsInsetRect(cell.frame, UIEdgeInsetsMake(-100, 0, 100, 0))
+            
+            return cell}
+        if case (3, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "姓名: " + userName
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+        if case (6, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "性別: " + userSex
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+        if case (8, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "年齡: " + String(userAge)
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+
+            return cell}
+        if case (10, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "出生日期: " + userBirth
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+        if case (14, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "第幾次測試: " + String(testCase)
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+        if case (17, 0) = (indexPath.column, indexPath.row) {
+            let distance : [Double : String] = [1: "40cm", 1.21 :"33cm" , 1.6 : "25cm" , 2: "20cm"]
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "測試距離: " + distance[distanceVary]!
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+
+            //cell.label.font = UIFont.systemFontSize(CGFloat: 25)
+            return cell}
         
         //"1,2,3,4........19 case"
         // case( 列，行 ) 列从0开始
@@ -212,38 +276,31 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     }
     
     
+    func updateViewData(){
+        //update inputdata
+        
+        let endPoint = costTime.filter{$0 != 0}
+        
+        for i in 0...18{
+            if(costTime[i] != 0){
+                self.inputData[i][0] = String(format: "%1.2f", costTime[i])}
+            if(readChart[i] != "None"){
+                self.inputData[i][1] = readChart[i]}
+            if(errorWord[i] != "None"){
+                self.inputData[i][2] = errorWord[i]}
+            if(errorNum[i] != -99){
+                self.inputData[i][3] = String(errorNum[i])}
+            if(xValueLabel[18 - i] != -99 && i < endPoint.count){
+                self.inputData[i][4] = String(xValueLabel[18 - i])
+            }
+                
+        }
+        
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        //update inputdata
-
-        for i in 0...18{
-            if(costTime[i] != 0){
-                self.inputData[i][0] = String(format: "%1.2f", costTime[i])
-            }
-        }
-        
-        for i in 0...18{
-            if(readChart[i] != "None"){
-            self.inputData[i][1] = readChart[i]
-            }
-        }
-        
-        for i in 0...18{
-            if(errorWord[i] != "None")
-            {
-            self.inputData[i][2] = errorWord[i]
-            }
-        }
-        
-        for i in 0...18{
-            if(errorNum[i] != -99){
-            self.inputData[i][3] = String(errorNum[i])
-            }
-        }
-                
         
         
         // customize sheet
@@ -361,14 +418,21 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             return item
         })
         
-        
+ //// 暂时不用画回归线 ////////////////////////////////////////////////////////////////////////////////////////////
         if (theta,midIndex) != (0.0 ,0){
-            lineChart.chartData = [data, regressionData]}
+            //lineChart.chartData = [data, regressionData]}
+            lineChart.chartData = [data]}
         else {
             lineChart.chartData = [data]
         }
         lineChart.strokeChart(regressionIndex)
+        
+        
+        //填充表格信息
+        updateViewData()
      
+        
+        
         // Change the chart you want to present here
         //self.view.addSubview(lineChart)
         self.mnreadChart.addSubview(lineChart)

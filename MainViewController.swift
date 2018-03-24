@@ -30,9 +30,16 @@ class MainViewController: UIViewController {
         let db = try! Connection("\(path)/db.sqlite3")
         let testResults = Table("testResults")
         let id = Expression<Int>("id")
-        let details  = Expression<String>("details")
-        let userName = Expression<String>("userName")
+        let userid = Expression<String>("userid")      //给测试人员的独一id
+        let sex = Expression<String>("sex")
+        let age = Expression<Int>("age")
+        let birth = Expression<String>("birth")
+        let userName = Expression<String>("userName")  //用户姓名
         let testTime = Expression<String>("testTime")  //测试当时的时间
+        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+        let distanceVary = Expression<Double>("distanceVary")
+        let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase)
+
         
         let timeSpent1 = Expression<Double>("timeSpent1")  //每段话时间（需log公式计算)
         let timeSpent2 = Expression<Double>("timeSpent2")
@@ -53,7 +60,6 @@ class MainViewController: UIViewController {
         let timeSpent17 = Expression<Double>("timeSpent17")
         let timeSpent18 = Expression<Double>("timeSpent18")
         let timeSpent19 = Expression<Double>("timeSpent19")
-        let distanceVary = Expression<Double>("distanceVary")
         
         let costTime1 = Expression<Double>("costTime1")   //每段话读取（准确时间）
         let costTime2 = Expression<Double>("costTime2")
@@ -135,6 +141,26 @@ class MainViewController: UIViewController {
         let errorNum18 = Expression<Int>("errorNum18")
         let errorNum19 = Expression<Int>("errorNum19")
         let testMode = Expression<String>("testMode")
+        
+        let logMar1 = Expression<Double>("logMar1")   //LogMar
+        let logMar2 = Expression<Double>("logMar2")
+        let logMar3 = Expression<Double>("logMar3")
+        let logMar4 = Expression<Double>("logMar4")
+        let logMar5 = Expression<Double>("logMar5")
+        let logMar6 = Expression<Double>("logMar6")
+        let logMar7 = Expression<Double>("logMar7")
+        let logMar8 = Expression<Double>("logMar8")
+        let logMar9 = Expression<Double>("logMar9")
+        let logMar10 = Expression<Double>("logMar10")
+        let logMar11 = Expression<Double>("logMar11")
+        let logMar12 = Expression<Double>("logMar12")
+        let logMar13 = Expression<Double>("logMar13")
+        let logMar14 = Expression<Double>("logMar14")
+        let logMar15 = Expression<Double>("logMar15")
+        let logMar16 = Expression<Double>("logMar16")
+        let logMar17 = Expression<Double>("logMar17")
+        let logMar18 = Expression<Double>("logMar18")
+        let logMar19 = Expression<Double>("logMar19")
 
 
 
@@ -153,6 +179,11 @@ class MainViewController: UIViewController {
             t.column(details)
             t.column(userName)
             t.column(testTime)
+            t.column(userid)
+            t.column(sex)
+            t.column(age)
+            t.column(birth)
+            t.column(testCase, defaultValue: 0)
             t.column(timeSpent1, defaultValue: 0)
             t.column(timeSpent2, defaultValue: 0)
             t.column(timeSpent3, defaultValue: 0)
@@ -253,6 +284,26 @@ class MainViewController: UIViewController {
             t.column(errorNum17, defaultValue: -99)
             t.column(errorNum18, defaultValue: -99)
             t.column(errorNum19, defaultValue: -99)
+            
+            t.column(logMar1, defaultValue: -99)
+            t.column(logMar2, defaultValue: -99)
+            t.column(logMar3, defaultValue: -99)
+            t.column(logMar4, defaultValue: -99)
+            t.column(logMar5, defaultValue: -99)
+            t.column(logMar6, defaultValue: -99)
+            t.column(logMar7, defaultValue: -99)
+            t.column(logMar8, defaultValue: -99)
+            t.column(logMar9, defaultValue: -99)
+            t.column(logMar10, defaultValue: -99)
+            t.column(logMar11, defaultValue: -99)
+            t.column(logMar12, defaultValue: -99)
+            t.column(logMar13, defaultValue: -99)
+            t.column(logMar14, defaultValue: -99)
+            t.column(logMar15, defaultValue: -99)
+            t.column(logMar16, defaultValue: -99)
+            t.column(logMar17, defaultValue: -99)
+            t.column(logMar18, defaultValue: -99)
+            t.column(logMar19, defaultValue: -99)
             t.column(testMode, defaultValue: "None")
          
         })
