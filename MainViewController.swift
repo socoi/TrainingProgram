@@ -38,7 +38,7 @@ class MainViewController: UIViewController {
         let testTime = Expression<String>("testTime")  //测试当时的时间
         let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
         let distanceVary = Expression<Double>("distanceVary")
-        let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase)
+        let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase + testMode)
 
         
         let timeSpent1 = Expression<Double>("timeSpent1")  //每段话时间（需log公式计算)

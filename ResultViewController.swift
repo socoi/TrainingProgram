@@ -11,9 +11,9 @@ import SQLite
 
 class ResultViewController: UIViewController {
     
-    @IBOutlet weak var tableView: UITableView!
     
-    public var newUser = String()
+    @IBOutlet weak var tableView: UITableView!
+    public var userID = String()
     public var mainContens = [String]()
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -23,8 +23,8 @@ class ResultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.addRightBarButtonWithImage(UIImage(named: "ic_notifications_black_24dp")!)
-        
+        self.tableView.reloadData()
+        self.tableView.registerCellNib(DataTableViewCell.self)
         tableView.allowsMultipleSelectionDuringEditing = false
 
     }
@@ -35,11 +35,8 @@ class ResultViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.setNavigationBarItem()
-        
         self.mainContens = []
         
-        //list database all rows
         let path = NSSearchPathForDirectoriesInDomains(
             .documentDirectory, .userDomainMask, true
             ).first!
@@ -47,14 +44,16 @@ class ResultViewController: UIViewController {
         let db = try! Connection("\(path)/db.sqlite3")
         let testResults = Table("testResults")
         let details  = Expression<String>("details")
+        let userid = Expression<String>("userid")
         
-        for user in try! db.prepare(testResults){
+        //只显示对应用户id的信息
+        let t = testResults.filter(userid == self.userID)
+        for user in try! db.prepare(t){
             self.mainContens.append(user[details])
         }
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
-        
-         }
+        }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -73,32 +72,7 @@ extension ResultViewController : UITableViewDelegate {
         return true
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if(editingStyle == UITableViewCellEditingStyle.delete) {
-            
-            //when you hit delete( base on contents delete)
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true
-                ).first!
-            let db = try! Connection("\(path)/db.sqlite3")
-            let testResults = Table("testResults")
-            let details       = Expression<String>("details")
-            
-            let currentCell = tableView.cellForRow(at: indexPath)! as! DataTableViewCell
-            let currentText = currentCell.dataText?.text!
-            
-            let t = testResults.filter(details == currentText!)
-
-            try! db.run(t.delete())
-            
-//            let sqliteSequence = Table("sqlite_sequence")
-//            try! db.run(sqliteSequence.delete())
-            
-            //refresh the page
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
-            self.navigationController?.pushViewController(vc, animated: false)
-        }
-    }
+  
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -379,11 +353,12 @@ extension ResultViewController : UITableViewDataSource {
 extension ResultViewController : SlideMenuControllerDelegate {
     
     func leftWillOpen() {
-        print("SlideMenuControllerDelegate: leftWillOpen")
+        //self.returnPrevious()
+        print("SlideMenuControllerDelegate: leftWillClose")
     }
     
     func leftDidOpen() {
-        print("SlideMenuControllerDelegate: leftDidOpen")
+        print("SlideMenuControllerDelegate: leftWillClose")
     }
     
     func leftWillClose() {

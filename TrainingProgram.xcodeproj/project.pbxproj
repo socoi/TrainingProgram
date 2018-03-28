@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2B89AA10D6100BD9224FEC53 /* Pods_TrainingProgram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CC9CC950E550AF07E76492 /* Pods_TrainingProgram.framework */; };
 		6324A87B1E8A15FC00EC65F2 /* SwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */; };
+		6330A727206635FC00FD3F41 /* userResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6330A726206635FC00FD3F41 /* userResultViewController.swift */; };
 		639F342E1E5163B300D0F47C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F342D1E5163B300D0F47C /* QuartzCore.framework */; };
 		639F34301E5163C300D0F47C /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F342F1E5163C300D0F47C /* ImageIO.framework */; };
 		639F34321E5163D100D0F47C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F34311E5163D100D0F47C /* CoreMedia.framework */; };
@@ -85,6 +86,7 @@
 /* Begin PBXFileReference section */
 		2A01D912058A4404AB472FE3 /* Pods-TrainingProgram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrainingProgram.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TrainingProgram/Pods-TrainingProgram.debug.xcconfig"; sourceTree = "<group>"; };
 		6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftViewController.swift; sourceTree = SOURCE_ROOT; };
+		6330A726206635FC00FD3F41 /* userResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userResultViewController.swift; sourceTree = "<group>"; };
 		639F342D1E5163B300D0F47C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		639F342F1E5163C300D0F47C /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		639F34311E5163D100D0F47C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -331,6 +333,7 @@
 				639F34501E517DE700D0F47C /* AppDelegate.swift */,
 				639F34541E517E0500D0F47C /* Info.plist */,
 				639F34551E517E0500D0F47C /* Test1.swift */,
+				6330A726206635FC00FD3F41 /* userResultViewController.swift */,
 				639F34581E517E0500D0F47C /* MNReadViewController.swift */,
 				639F34901E52CE7B00D0F47C /* ResultViewController.swift */,
 				639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */,
@@ -477,6 +480,7 @@
 				639F34B61E52D2DF00D0F47C /* NonMenuController.swift in Sources */,
 				639F34B81E52D2DF00D0F47C /* SubContentsViewController.swift in Sources */,
 				639F347A1E518B0E00D0F47C /* EVFaceTracker.m in Sources */,
+				6330A727206635FC00FD3F41 /* userResultViewController.swift in Sources */,
 				63C78B161E5351C500479725 /* PNValue.swift in Sources */,
 				639F34BB1E52D32D00D0F47C /* LeftViewController.swift in Sources */,
 				639F34A91E52D19C00D0F47C /* ImageHeaderView.swift in Sources */,

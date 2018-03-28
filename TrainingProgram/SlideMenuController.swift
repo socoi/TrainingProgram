@@ -1065,7 +1065,7 @@ extension UIViewController {
             
             //refresh the page
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
+            let vc = storyboard.instantiateViewController(withIdentifier: "userResultViewController") as! userResultViewController
             self.navigationController?.pushViewController(vc, animated: false)
 
         })

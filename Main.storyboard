@@ -431,10 +431,10 @@
             </objects>
             <point key="canvasLocation" x="130" y="2189"/>
         </scene>
-        <!--Result View Controller-->
+        <!--User Result View Controller-->
         <scene sceneID="wgn-jj-aBR">
             <objects>
-                <viewController storyboardIdentifier="ResultViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="fb3-Eu-n4f" customClass="ResultViewController" customModule="TrainingProgram" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="userResultViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="fb3-Eu-n4f" customClass="userResultViewController" customModule="TrainingProgram" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="w1f-bC-NWl"/>
                         <viewControllerLayoutGuide type="bottom" id="qIW-c3-3g9"/>
@@ -468,6 +468,46 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XwW-jK-db6" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="25" y="-67"/>
+        </scene>
+        <!--Result View Controller-->
+        <scene sceneID="VB4-Lb-rLt">
+            <objects>
+                <viewController storyboardIdentifier="ResultViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="GQU-LW-Twe" customClass="ResultViewController" customModule="TrainingProgram" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="OD0-rX-oIi"/>
+                        <viewControllerLayoutGuide type="bottom" id="bnj-Yh-HGx"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Hgh-Q8-lm3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vkU-2e-njG">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" red="0.89411764709999997" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="GQU-LW-Twe" id="luH-ax-DFG"/>
+                                    <outlet property="delegate" destination="GQU-LW-Twe" id="18Q-yo-PAr"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.89411764709999997" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="vkU-2e-njG" secondAttribute="trailing" id="U4i-1m-Ksa"/>
+                            <constraint firstItem="bnj-Yh-HGx" firstAttribute="top" secondItem="vkU-2e-njG" secondAttribute="bottom" id="Zu4-Xm-vNa"/>
+                            <constraint firstItem="vkU-2e-njG" firstAttribute="top" secondItem="Hgh-Q8-lm3" secondAttribute="top" id="b11-pZ-7Xs"/>
+                            <constraint firstItem="vkU-2e-njG" firstAttribute="leading" secondItem="Hgh-Q8-lm3" secondAttribute="leading" id="i7b-gI-5QL"/>
+                        </constraints>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="600"/>
+                    <connections>
+                        <outlet property="tableView" destination="vkU-2e-njG" id="dXu-4A-6G9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fWg-Qw-HLK" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="25" y="-67"/>
         </scene>
     </scenes>
     <resources>

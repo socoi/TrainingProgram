@@ -140,22 +140,22 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
+//        if case (8, 0) = (indexPath.column, indexPath.row) {
+//            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+//            cell.label.textColor = UIColor.blue
+//            cell.label.text = "年齡: " + String(userAge)
+//            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+//            cell.label.sizeToFit()
+//
+//            return cell}
         if case (8, 0) = (indexPath.column, indexPath.row) {
-            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
-            cell.label.textColor = UIColor.blue
-            cell.label.text = "年齡: " + String(userAge)
-            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
-            cell.label.sizeToFit()
-
-            return cell}
-        if case (10, 0) = (indexPath.column, indexPath.row) {
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
             cell.label.text = "出生日期: " + userBirth
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
-        if case (14, 0) = (indexPath.column, indexPath.row) {
+        if case (10, 0) = (indexPath.column, indexPath.row) {
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
             cell.label.text = "第幾次測試: " + String(testCase)

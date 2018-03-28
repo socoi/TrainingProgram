@@ -255,17 +255,30 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let userbirth = login![4] as UITextField
 
             if (userid.text != "") && (usersex.text != "") && (userage.text != "") && (userbirth.text != "") && (username.text != ""){
+                
             self.userName = username.text!
             self.userId = userid.text!
             self.userSex = usersex.text!
             self.userAge = Int(userage.text!)!
             self.userBirth = userbirth.text!
             
-            //prepare for the test
-            self.countDownNumber = 4
-            self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+            let path = NSSearchPathForDirectoriesInDomains(
+                    .documentDirectory, .userDomainMask, true
+                    ).first!
+                
+            let db = try! Connection("\(path)/db.sqlite3")
+            let testResults = Table("testResults")
+            let userID = Expression<String>("userid")
+            let t = testResults.filter(userID == self.userId)
+            let queryNum = try! db.scalar(t.count)
+            
+            //保证userid不重复
+                if(queryNum == 0){
+                    //prepare for the test
+                    self.countDownNumber = 4
+                    self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                }
             }
-
         })
         
         let cancelAction = UIAlertAction(title: "返回", style: .default, handler: {
@@ -602,10 +615,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         textView.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle(rawValue: "新細明體"))
         
         //get color and distance
-        var colors : [String:UIColor] = ["白色": UIColor.white, "黑色":
-            UIColor.black, "藍色": UIColor.blue,"黃色":
-                UIColor.yellow,"綠色":
-                    UIColor.green,"紅色":UIColor.red]
+        let fontblue:UIColor = UIColor(displayP3Red: CGFloat(192.0/255.0), green: CGFloat(206.0/255.0), blue: CGFloat(235.0/255.0), alpha: 1)
+        let fontgreen = UIColor(displayP3Red: CGFloat(144.0/255.0), green: CGFloat(238.0/255.0), blue:CGFloat(144.0/255.0), alpha: 1)
+        var colors : [String:UIColor] = ["白色": UIColor.white,
+                "黑色":UIColor.black,
+                "藍色":fontblue,
+                "黃色":UIColor.yellow,
+                "綠色":fontgreen,
+                "紅色":UIColor.red]
         
         
         let distance : [String:Double] = ["40cm": 1, "33cm":

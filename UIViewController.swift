@@ -19,6 +19,13 @@ extension UIViewController {
         self.slideMenuController()?.addRightGestures()
     }
     
+    func returnPrevious(){
+        self.addLeftBarButtonWithImage(UIImage(named: "ic_menu_black_24dp")!)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "userResultViewController") as! userResultViewController
+        self.navigationController?.pushViewController(subContentsVC, animated: true)
+    }
+    
     func removeNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.rightBarButtonItem = nil

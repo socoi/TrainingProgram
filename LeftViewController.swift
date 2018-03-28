@@ -49,7 +49,7 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
         let goViewController = storyboard.instantiateViewController(withIdentifier: "GoViewController") as! GoViewController
         self.goViewController = UINavigationController(rootViewController: goViewController)
         
-        let resultViewController = storyboard.instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
+        let resultViewController = storyboard.instantiateViewController(withIdentifier: "userResultViewController") as! userResultViewController
         
         //resultViewController.delegate = self
         self.resultViewController = UINavigationController(rootViewController: resultViewController)
