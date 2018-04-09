@@ -57,7 +57,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
 
 
-    public var mnread_num = 1  //test1 （19个句子） test2(19个句子) 彼此都不重复
+    public var mnread_num = 0  //test1 test2 test3 彼此都不重复
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
@@ -412,10 +412,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     
     
-    public func stopTestUpdate(Times:Int){
-        
-        //第一次还是第二次测试
-        self.mnread_num = Times
+    public func stopTestUpdate(){
         
         
         //测试中需要记录的5个数据
@@ -527,44 +524,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     public func stopTest(){
         
-        if(self.mnread_num == 1) //第一次测试结束继续
-        {
-        stopTestUpdate(Times: 1)
-        let optionMenu = UIAlertController(title: "第一次測試結束", message: inputResults, preferredStyle: .alert)
-//        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
-//                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
-//                ])
-//        optionMenu.setValue(attributedString, forKey: "continue")
-        let okAction = UIAlertAction(title: "開始第二次測試", style: .cancel, handler: {
-            (alert: UIAlertAction!) -> Void in
-
-            //清空之前记录
-            self.testNumbers = 0
-            self.timeSpent.removeAll()
-            self.costTime.removeAll()
-            self.errorWord.removeAll()
-            self.errorNum.removeAll()
-            self.selectedChart.removeAll()
-            self.testCases.removeAll()
-            
-            self.recordButton.isHidden = true
-            self.countDownNumber = 4
-            self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-            self.mnread_num += 1
-        })
-            optionMenu.addAction(okAction)
-            optionMenu.popoverPresentationController?.sourceView = textView
-            let t1 = fullScreenSize.height
-            let t2 = fullScreenSize.width
-            
-            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
-            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-            self.present(optionMenu, animated: true, completion: nil)
-            
-        }
+        stopTestUpdate()
         
-        else{ //第二次全部测试结束
-            stopTestUpdate(Times: 2)
+        //全部测试结束
+        if(self.mnread_num == 1){
             let optionMenu = UIAlertController(title: "測試結束", message: inputResults, preferredStyle: .alert)
             let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
                 (alert: UIAlertAction!) -> Void in
@@ -581,6 +544,43 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             self.present(optionMenu, animated: true, completion: nil)
         }
         
+        
+        else //准备另一个测试
+        {
+            let s1:String = "第" + String(4 - self.mnread_num) + "次測試結束"
+            let s2:String = "開始第" + String(5 - self.mnread_num) + "次測試"
+        let optionMenu = UIAlertController(title: s1, message: inputResults, preferredStyle: .alert)
+//        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
+//                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
+//                ])
+//        optionMenu.setValue(attributedString, forKey: "continue")
+        let okAction = UIAlertAction(title: s2, style: .cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+
+            //清空之前记录
+            self.mnread_num -= 1
+            self.testNumbers = 0
+            self.timeSpent.removeAll()
+            self.costTime.removeAll()
+            self.errorWord.removeAll()
+            self.errorNum.removeAll()
+            self.selectedChart.removeAll()
+            self.testCases.removeAll()
+            
+            self.recordButton.isHidden = true
+            self.countDownNumber = 4
+            self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+        })
+            optionMenu.addAction(okAction)
+            optionMenu.popoverPresentationController?.sourceView = textView
+            let t1 = fullScreenSize.height
+            let t2 = fullScreenSize.width
+            
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
+            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+            self.present(optionMenu, animated: true, completion: nil)
+            
+        }
     }
     
 
@@ -625,8 +625,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 "紅色":UIColor.red]
         
         
-        let distance : [String:Double] = ["40cm": 1, "33cm":
-            1.21, "25cm":1.6 , "20cm":2]
+        let distance : [String:Double] = ["40cm": 1.0, "33cm":
+            2.0, "25cm":3.0 , "20cm":4.0, "16cm":5.0, "13cm":6.0]
         
         //color and distance
         textView.textColor = colors[fontColor]
@@ -683,9 +683,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 }
     
 
-    
-    
-    
     private func startRecording() throws {
         
         self.inputResults = ""

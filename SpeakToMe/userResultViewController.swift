@@ -37,7 +37,7 @@ class userResultViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.setNavigationBarItem()
+        //self.setNavigationBarItem()  //不显示删除信息
         
         self.mainContens = []
         

@@ -10,6 +10,7 @@
 		2B89AA10D6100BD9224FEC53 /* Pods_TrainingProgram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CC9CC950E550AF07E76492 /* Pods_TrainingProgram.framework */; };
 		6324A87B1E8A15FC00EC65F2 /* SwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */; };
 		6330A727206635FC00FD3F41 /* userResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6330A726206635FC00FD3F41 /* userResultViewController.swift */; };
+		63363382206D1C74007221D9 /* TestDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63363381206D1C74007221D9 /* TestDemo.swift */; };
 		639F342E1E5163B300D0F47C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F342D1E5163B300D0F47C /* QuartzCore.framework */; };
 		639F34301E5163C300D0F47C /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F342F1E5163C300D0F47C /* ImageIO.framework */; };
 		639F34321E5163D100D0F47C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639F34311E5163D100D0F47C /* CoreMedia.framework */; };
@@ -42,7 +43,7 @@
 		639F34A91E52D19C00D0F47C /* ImageHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34A81E52D19C00D0F47C /* ImageHeaderView.swift */; };
 		639F34B21E52D2DF00D0F47C /* ExSlideMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AA1E52D2DF00D0F47C /* ExSlideMenuController.swift */; };
 		639F34B31E52D2DF00D0F47C /* GoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AB1E52D2DF00D0F47C /* GoViewController.swift */; };
-		639F34B41E52D2DF00D0F47C /* JavaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AC1E52D2DF00D0F47C /* JavaViewController.swift */; };
+		639F34B41E52D2DF00D0F47C /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AC1E52D2DF00D0F47C /* DemoViewController.swift */; };
 		639F34B61E52D2DF00D0F47C /* NonMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AE1E52D2DF00D0F47C /* NonMenuController.swift */; };
 		639F34B71E52D2DF00D0F47C /* RightViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34AF1E52D2DF00D0F47C /* RightViewController.swift */; };
 		639F34B81E52D2DF00D0F47C /* SubContentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */; };
@@ -87,6 +88,7 @@
 		2A01D912058A4404AB472FE3 /* Pods-TrainingProgram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrainingProgram.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TrainingProgram/Pods-TrainingProgram.debug.xcconfig"; sourceTree = "<group>"; };
 		6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftViewController.swift; sourceTree = SOURCE_ROOT; };
 		6330A726206635FC00FD3F41 /* userResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userResultViewController.swift; sourceTree = "<group>"; };
+		63363381206D1C74007221D9 /* TestDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDemo.swift; sourceTree = "<group>"; };
 		639F342D1E5163B300D0F47C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		639F342F1E5163C300D0F47C /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		639F34311E5163D100D0F47C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -123,7 +125,7 @@
 		639F34A81E52D19C00D0F47C /* ImageHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageHeaderView.swift; sourceTree = SOURCE_ROOT; };
 		639F34AA1E52D2DF00D0F47C /* ExSlideMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExSlideMenuController.swift; sourceTree = SOURCE_ROOT; };
 		639F34AB1E52D2DF00D0F47C /* GoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoViewController.swift; sourceTree = SOURCE_ROOT; };
-		639F34AC1E52D2DF00D0F47C /* JavaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JavaViewController.swift; sourceTree = SOURCE_ROOT; };
+		639F34AC1E52D2DF00D0F47C /* DemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = SOURCE_ROOT; };
 		639F34AE1E52D2DF00D0F47C /* NonMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonMenuController.swift; sourceTree = SOURCE_ROOT; };
 		639F34AF1E52D2DF00D0F47C /* RightViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RightViewController.swift; sourceTree = SOURCE_ROOT; };
 		639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubContentsViewController.swift; sourceTree = SOURCE_ROOT; };
@@ -236,11 +238,12 @@
 				639F34AB1E52D2DF00D0F47C /* GoViewController.swift */,
 				639F34BA1E52D32D00D0F47C /* LeftViewController.swift */,
 				6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */,
-				639F34AC1E52D2DF00D0F47C /* JavaViewController.swift */,
+				639F34AC1E52D2DF00D0F47C /* DemoViewController.swift */,
 				639F34AE1E52D2DF00D0F47C /* NonMenuController.swift */,
 				639F34AF1E52D2DF00D0F47C /* RightViewController.swift */,
 				639F34881E52BB1C00D0F47C /* SlideMenuController.swift */,
 				639F34CB1E52D79600D0F47C /* SlideMenuControllerSwift.h */,
+				63363381206D1C74007221D9 /* TestDemo.swift */,
 			);
 			name = Menu;
 			sourceTree = "<group>";
@@ -504,7 +507,7 @@
 				63C78B0F1E5351C500479725 /* PNColor.swift in Sources */,
 				639F34961E52D0F100D0F47C /* BaseTableViewCell.swift in Sources */,
 				639F347D1E518C6400D0F47C /* EVFaceTrackerAppDelegate.m in Sources */,
-				639F34B41E52D2DF00D0F47C /* JavaViewController.swift in Sources */,
+				639F34B41E52D2DF00D0F47C /* DemoViewController.swift in Sources */,
 				639F34A41E52D15A00D0F47C /* UIImageView.swift in Sources */,
 				639F34A71E52D15A00D0F47C /* UIViewController.swift in Sources */,
 				639F345F1E517E0500D0F47C /* MNReadViewController.swift in Sources */,
@@ -512,6 +515,7 @@
 				639F34891E52BB1C00D0F47C /* SlideMenuController.swift in Sources */,
 				63C78B101E5351C500479725 /* PNGenericChart.swift in Sources */,
 				639F34911E52CE7B00D0F47C /* ResultViewController.swift in Sources */,
+				63363382206D1C74007221D9 /* TestDemo.swift in Sources */,
 				63C78B111E5351C500479725 /* PNLineChart.swift in Sources */,
 				639F34971E52D0F100D0F47C /* DataTableViewCell.swift in Sources */,
 				63C78B0D1E5351C500479725 /* PNBarChart.swift in Sources */,

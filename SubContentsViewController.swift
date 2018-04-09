@@ -16,7 +16,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     
     //read from database
     public var yLabel = [Double]()
-    public var distanceVary = Double()
+    public var distanceVary = Double() //1,2,3,4,5,6分别对应6个
     public var costTime = [Double]()
     public var readChart = [String]()
     public var errorWord = [String]()
@@ -163,7 +163,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             cell.label.sizeToFit()
             return cell}
         if case (17, 0) = (indexPath.column, indexPath.row) {
-            let distance : [Double : String] = [1: "40cm", 1.21 :"33cm" , 1.6 : "25cm" , 2: "20cm"]
+            let distance : [Double : String] = [1.0: "40cm", 2.0 :"33cm" , 3.0 : "25cm" , 4.0: "20cm", 5.0: "16cm", 6.0: "13cm"]
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
             cell.label.text = "測試距離: " + distance[distanceVary]!
@@ -335,8 +335,9 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             xLabel.append(s)
             }
             else{
-            let s = String(format: "%1.2f", Double(i - 4) * 0.1 * distanceVary)
-            let t = ((Double(i - 4) * 0.1 * distanceVary) * 100).rounded() / 100
+            let value = Double(i + Int(distanceVary) - 5) * 0.1
+            let s = String(format: "%1.2f", value)
+            let t = (value * 100).rounded() / 100
             xValueLabel.append(t)
             xLabel.append(s)
             }

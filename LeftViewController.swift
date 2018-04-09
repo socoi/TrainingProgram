@@ -9,8 +9,8 @@ import UIKit
 
 enum LeftMenu: Int {
     case main = 0
+    case Demo
     case MNRead
-    case java
     case go
     case ResultView
 }
@@ -22,10 +22,10 @@ protocol LeftMenuProtocol : class {
 class LeftViewController : UIViewController, LeftMenuProtocol {
     
     @IBOutlet weak var tableView: UITableView!
-    var menus = ["Main", "MNRead", "Temportal Training", "Spatial Training", "Test Results"]
+    var menus = ["Main", "MNRead Demo", "MNRead", "Spatial Training", "Test Results"]
     var mainViewController: UIViewController!
     var swiftViewController: UIViewController!
-    var javaViewController: UIViewController!
+    var DemoViewController: UIViewController!
     var goViewController: UIViewController!
     var resultViewController: UIViewController!
     var imageHeaderView: ImageHeaderView!
@@ -43,8 +43,8 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
         let swiftViewController = storyboard.instantiateViewController(withIdentifier: "MNReadViewController") as! MNReadViewController
         self.swiftViewController = UINavigationController(rootViewController: swiftViewController)
         
-        let javaViewController = storyboard.instantiateViewController(withIdentifier: "JavaViewController") as! JavaViewController
-        self.javaViewController = UINavigationController(rootViewController: javaViewController)
+        let DemoViewController = storyboard.instantiateViewController(withIdentifier: "DemoController") as! DemoViewController
+        self.DemoViewController = UINavigationController(rootViewController: DemoViewController)
         
         let goViewController = storyboard.instantiateViewController(withIdentifier: "GoViewController") as! GoViewController
         self.goViewController = UINavigationController(rootViewController: goViewController)
@@ -76,8 +76,8 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
             self.slideMenuController()?.changeMainViewController(self.mainViewController, close: true)
         case .MNRead:
             self.slideMenuController()?.changeMainViewController(self.swiftViewController, close: true)
-        case .java:
-            self.slideMenuController()?.changeMainViewController(self.javaViewController, close: true)
+        case .Demo:
+            self.slideMenuController()?.changeMainViewController(self.DemoViewController, close: true)
         case .go:
             self.slideMenuController()?.changeMainViewController(self.goViewController, close: true)
         case .ResultView:
@@ -90,7 +90,7 @@ extension LeftViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let menu = LeftMenu(rawValue: indexPath.row) {
             switch menu {
-            case .main, .MNRead, .java, .go, .ResultView:
+            case .main,.Demo,.MNRead,.go, .ResultView:
                 return BaseTableViewCell.height()
             }
         }
@@ -120,7 +120,7 @@ extension LeftViewController : UITableViewDataSource {
         
         if let menu = LeftMenu(rawValue: indexPath.row) {
             switch menu {
-            case .main, .MNRead, .java, .go, .ResultView:
+            case .main, .Demo, .MNRead , .go, .ResultView:
                 let cell = BaseTableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: BaseTableViewCell.identifier)
                 cell.setData(menus[indexPath.row])
                 return cell

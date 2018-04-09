@@ -1,12 +1,11 @@
 //
-//  JavaViewController.swift
 //  SlideMenuControllerSwift
 //
 
 
 import UIKit
 
-class JavaViewController: UIViewController {
+class DemoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()

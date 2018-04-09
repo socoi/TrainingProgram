@@ -16,21 +16,23 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
     @IBOutlet weak var backColor: UIPickerView!
     @IBOutlet weak var watchDistance: UIPickerView!
     @IBOutlet weak var testLanguage: UIPickerView!
-    
     @IBOutlet weak var testMode: UIPickerView!
+    @IBOutlet weak var testNumber: UIPickerView!
+
     
     let fontRow = ["黑色","黃色","紅色","白色"]
     let backRow =  ["白色","藍色","綠色","黑色"]
-    let distanceRow = ["40cm", "33cm", "25cm", "20cm"]
+    let distanceRow = ["40cm", "33cm", "25cm", "20cm", "16cm", "13cm"]
     let languageRow = ["廣東話", "國語"]
     let testRow = ["自動", "手動"]
-
+    let testNumRow = ["1","2","3"]
     
     var selectedFont = "黑色"
     var selectedBack = "白色"
     var selectedDistance = "40cm"
-    var selectedLanguage = "廣東話"
-    var selectedTest = "自動"
+    var selectedLanguage = "國語"
+    var selectedTest = "手動"
+    var selectedNum = "1"
 
     
     
@@ -47,6 +49,8 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         self.testLanguage.delegate = self
         self.testMode.dataSource = self
         self.testMode.delegate = self
+        self.testNumber.delegate = self
+        self.testNumber.dataSource = self
 
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(MNReadViewController.imageTapped(gesture:)))
@@ -65,6 +69,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
             vc.watchDistance = self.selectedDistance
             vc.testLanguage = self.selectedLanguage
             vc.testMode = self.selectedTest
+            vc.mnread_num = Int(self.selectedNum)!
         }        }
         
     
@@ -92,6 +97,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         if(pickerView == backColor) {return backRow.count}
         if(pickerView == testLanguage) {return languageRow.count}
         if(pickerView == testMode){return testRow.count}
+        if(pickerView == testNumber){return testNumRow.count}
         else {return 0}
     }
     
@@ -101,6 +107,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         if(pickerView == backColor) {return backRow[row]}
         if(pickerView == testLanguage) {return languageRow[row]}
         if(pickerView == testMode){return testRow[row]}
+        if(pickerView == testNumber){return testNumRow[row]}
         else {return "unsuccessful"}
     }
     
@@ -121,6 +128,9 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         selectedTest = testRow[row] as String
         }
         
+        if(pickerView == testNumber){
+        selectedNum = testNumRow[row] as String
+        }
         
     }
     
