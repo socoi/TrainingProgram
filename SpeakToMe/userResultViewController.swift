@@ -27,7 +27,8 @@ class userResultViewController: UIViewController {
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         
-        self.addRightBarButtonWithImage(UIImage(named: "ic_notifications_black_24dp")!)
+        //self.addRightBarButtonWithImage(UIImage(named: "ic_notifications_black_24dp")!)
+        self.setNavigationBarItem()
         tableView.allowsMultipleSelectionDuringEditing = false
     }
     

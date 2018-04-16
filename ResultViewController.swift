@@ -192,7 +192,7 @@ extension ResultViewController : UITableViewDelegate {
         let birth = Expression<String>("birth")
         let userName = Expression<String>("userName")  //用户姓名
         let testTime = Expression<String>("testTime")  //测试当时的时间
-        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+        let testCase = Expression<Int>("testCase")  //第几段测试
 
         
         

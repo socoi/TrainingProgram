@@ -52,12 +52,13 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var errorWord = Array<String>() //error words
     public var errorNum =  Array<Int>() //error number
     public var selectedChart = Array<String>() //random picked chart
-    public var testCases = Array<Int>() //随机选取的readingchart的编号
-    public var testedCases = Array<Int>() //已测试的redingchart的编号
+    //public var testCases = Array<Int>() //随机选取的readingchart的编号
     
 
 
-    public var mnread_num = 0  //test1 test2 test3 彼此都不重复
+    public var mnread_num = -1  //total test numbers
+    public var mnread_case = 0  //start from test1
+    
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
@@ -83,7 +84,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 
     
     
-    public let readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶著五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待著","小汽車緩慢地穿過這個山洞",
+    public var readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶著五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待著","小汽車緩慢地穿過這個山洞",
                                
         "妹妹吃下弟弟幫忙買的餅乾","他在一家電影公司擔任秘書","小貓在畫紙上踩了幾個腳印","木馬是小朋友最喜歡的玩具","沒有人知道這是誰的萬花筒","小明把聽過的故事描述出來","我在動物園裏看到了大笨象","今年我班的足球隊實力很強","他父親叫他寫信給歐陽先生","老鼠冒著生命危險去找食物","他希望在假期裡多參加活動","小朋友最喜歡坐在摩天輪上","他給我們搖來了最平穩的船","一群小螞蟻緩慢地爬上山頂","星期六父親帶弟弟去騎木馬","我在討論中清楚地表達意見","她繼續守護早已長大的孩子","魔術師把大西瓜放在袋子裏","爸爸給我講了這樣一個故事",
         
@@ -92,6 +93,22 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     ]
     
+    
+    public func messageBox(titlemessage: String){
+        let optionMenu = UIAlertController(title: titlemessage,message:"", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+            self.performSegue(withIdentifier: "Test1", sender: self)
+        })
+        optionMenu.addAction(okAction)
+        optionMenu.popoverPresentationController?.sourceView = self.textView
+        let t1 = self.fullScreenSize.height
+        let t2 = self.fullScreenSize.width
+        
+        optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
+        optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+        self.present(optionMenu, animated: true, completion: nil)
+    }
     
     
     
@@ -212,19 +229,19 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             
         }
         
-        startMenu.addTextField {
-            (textField: UITextField!) -> Void in
-            self.agetextField = textField
-            let heightConstraint = NSLayoutConstraint(item: self.agetextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-            self.agetextField.addConstraint(heightConstraint)
-            self.agetextField.placeholder = "輸入年齡"
-            self.agetextField.font = UIFont.systemFont(ofSize: 30)
-            self.agetextField.clearButtonMode = .whileEditing
-            self.agetextField.inputView = self.agepickView
-
-
-            
-        }
+//        startMenu.addTextField {
+//            (textField: UITextField!) -> Void in
+//            self.agetextField = textField
+//            let heightConstraint = NSLayoutConstraint(item: self.agetextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+//            self.agetextField.addConstraint(heightConstraint)
+//            self.agetextField.placeholder = "輸入年齡"
+//            self.agetextField.font = UIFont.systemFont(ofSize: 30)
+//            self.agetextField.clearButtonMode = .whileEditing
+//            self.agetextField.inputView = self.agepickView
+//
+//
+//
+//        }
         
         startMenu.addTextField {
             (textField: UITextField!) -> Void in
@@ -236,6 +253,12 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             
             let datePickerView:UIDatePicker = UIDatePicker()
             datePickerView.datePickerMode = UIDatePickerMode.date
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd/MM/yyyy"
+            let someDateTime = formatter.date(from: "01/01/2008")
+            datePickerView.setDate(someDateTime!, animated: false)
+            
             textField.inputView = datePickerView
             datePickerView.addTarget(self, action: #selector(self.datePickerValueChanged), for: UIControlEvents.valueChanged)
             
@@ -251,15 +274,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let userid = login![0] as UITextField
             let username = login![1] as UITextField
             let usersex = login![2] as UITextField
-            let userage = login![3] as UITextField
-            let userbirth = login![4] as UITextField
-
-            if (userid.text != "") && (usersex.text != "") && (userage.text != "") && (userbirth.text != "") && (username.text != ""){
-                
+            //let userage = login![3] as UITextField
+            let userbirth = login![3] as UITextField
+            
             self.userName = username.text!
             self.userId = userid.text!
             self.userSex = usersex.text!
-            self.userAge = Int(userage.text!)!
+            //self.userAge = Int(userage.text!)!
+            self.userAge = 0 //不需要输入年龄，暂时默认都为0吧
             self.userBirth = userbirth.text!
             
             let path = NSSearchPathForDirectoriesInDomains(
@@ -273,12 +295,17 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let queryNum = try! db.scalar(t.count)
             
             //保证userid不重复
-                if(queryNum == 0){
+                if(queryNum == 0) && (userid.text != "") && (usersex.text != "") && (userbirth.text != "") && (username.text != ""){
                     //prepare for the test
                     self.countDownNumber = 4
                     self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
                 }
+            
+                else{
+                    self.messageBox(titlemessage: "用戶信息不完整或用戶已存在")
             }
+          
+            
         })
         
         let cancelAction = UIAlertAction(title: "返回", style: .default, handler: {
@@ -288,8 +315,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             self.performSegue(withIdentifier: "Test1", sender: self)
             
         })
-        
-   
         
         
         startMenu.popoverPresentationController?.sourceView = textView
@@ -304,20 +329,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         }
     
-    
-    public func testContent(number : Int ) -> String{
-        let numCount = readingChart.count //57 reading cases
-        var arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
-        for _ in 1...57{
-             //存放第一次测试取的编号，保证两次测试没有相同内容
-            if(!testCases.contains(arrayKey) && !testedCases.contains(arrayKey)){
-                testCases.append(arrayKey)
-                testedCases.append(arrayKey)
-                break
-            }
-            else{ arrayKey = Int(arc4random_uniform(UInt32(numCount)))}
-        }
-        return readingChart[testCases[number - 1]]
+    //随机选择一个chart测试
+    public func testContent() -> String{
+        let numCount = self.readingChart.count
+        let arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
+        //testCases.append(arrayKey)
+        let chooseContent = self.readingChart[arrayKey]
+        self.readingChart.remove(at: arrayKey)
+        return chooseContent
     }
     
     //after countdown start test automatically
@@ -344,13 +363,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public func contents(str : String, num : Int){
         textView.isHidden = false
         recordButton.isHidden = false
-        
-        
         //distance didnot affect fontsize
         //textView.font = UIFont.preferredFont(forTextStyle: .headline)
         textView.font = .systemFont(ofSize: CGFloat(fontSize[num - 1] * 1.4))
 
-        
         //fixed 3 lines
         var number = 0
         var fixStr = [Character]()
@@ -386,28 +402,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 
     
     public func showContents(times : Int){
-        switch times{
-        case 1 : contents(str: testContent(number:1), num : 1)
-        case 2 : contents(str: testContent(number:2), num : 2)
-        case 3 : contents(str: testContent(number:3), num : 3)
-        case 4 : contents(str: testContent(number:4), num : 4)
-        case 5 : contents(str: testContent(number:5), num : 5)
-        case 6 : contents(str: testContent(number:6), num : 6)
-        case 7 : contents(str: testContent(number:7), num : 7)
-        case 8 : contents(str: testContent(number:8), num : 8)
-        case 9 : contents(str: testContent(number:9), num : 9)
-        case 10 : contents(str: testContent(number:10), num : 10)
-        case 11 : contents(str: testContent(number:11), num : 11)
-        case 12 : contents(str: testContent(number:12), num : 12)
-        case 13 : contents(str: testContent(number:13), num : 13)
-        case 14 : contents(str: testContent(number:14), num : 14)
-        case 15 : contents(str: testContent(number:15), num : 15)
-        case 16 : contents(str: testContent(number:16), num : 16)
-        case 17 : contents(str: testContent(number:17), num : 17)
-        case 18 : contents(str: testContent(number:18), num : 18)
-        case 19 : contents(str: testContent(number:19), num : 19)
-        default : stopTest()
-        }
+        testResults = testContent()
+        contents(str: testResults, num: times)
     }
     
     
@@ -431,7 +427,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         let dateString = dateformatter.string(from : stopTime)
         //let resultCell = self.userName + "   " + dateString + " (" + self.testMode + ")"
         var resultCell = self.userId + "__" + dateString + "__"
-        resultCell = resultCell + "test"  + String(self.mnread_num) + "__" + self.testMode
+        resultCell = resultCell + "test"  + String(self.mnread_case + 1) + "__" + self.testMode
         
         let path = NSSearchPathForDirectoriesInDomains(
             .documentDirectory, .userDomainMask, true
@@ -448,7 +444,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         let userAge = Expression<Int>("age")
         let userBirth = Expression<String>("birth")
         let distanceVary = Expression<Double>("distanceVary")
-        let testCase = Expression<Int>("testCase") //第一次测试
+        let testCase = Expression<Int>("testCase") //第几次测试
         
         // updated information
         
@@ -463,7 +459,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             userBirth <- self.userBirth,
             testTime <- dateString,
             distanceVary <- self.distanceVary,
-            testCase <- self.mnread_num
+            testCase <- self.mnread_case + 1
         )
         try! db.run(insert)
         
@@ -523,32 +519,21 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     }
     
     public func stopTest(){
-        
+      
         stopTestUpdate()
         
         //全部测试结束
         if(self.mnread_num == 1){
-            let optionMenu = UIAlertController(title: "測試結束", message: inputResults, preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                self.performSegue(withIdentifier: "Test1", sender: self)
-            })
-            
-            optionMenu.addAction(okAction)
-            optionMenu.popoverPresentationController?.sourceView = textView
-            let t1 = fullScreenSize.height
-            let t2 = fullScreenSize.width
-            
-            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
-            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-            self.present(optionMenu, animated: true, completion: nil)
+           self.messageBox(titlemessage: "全部測試結束")
         }
         
         
-        else //准备另一个测试
+        else//准备另一个测试
         {
-            let s1:String = "第" + String(4 - self.mnread_num) + "次測試結束"
-            let s2:String = "開始第" + String(5 - self.mnread_num) + "次測試"
+            self.mnread_num -= 1
+            self.mnread_case += 1
+            let s1:String = "第" + String(self.mnread_case) + "次測試結束"
+            let s2:String = "開始第" + String(self.mnread_case + 1) + "次測試"
         let optionMenu = UIAlertController(title: s1, message: inputResults, preferredStyle: .alert)
 //        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
 //                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
@@ -558,18 +543,20 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             (alert: UIAlertAction!) -> Void in
 
             //清空之前记录
-            self.mnread_num -= 1
             self.testNumbers = 0
             self.timeSpent.removeAll()
             self.costTime.removeAll()
             self.errorWord.removeAll()
             self.errorNum.removeAll()
             self.selectedChart.removeAll()
-            self.testCases.removeAll()
+            //self.testCases.removeAll()
             
+            //实际中基本不可能19样例全完成
+            if(self.testNumbers<18){
             self.recordButton.isHidden = true
             self.countDownNumber = 4
             self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+            }
         })
             optionMenu.addAction(okAction)
             optionMenu.popoverPresentationController?.sourceView = textView
@@ -642,12 +629,12 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     
     //detect accuracy, whether continue()
-    //any three words match -> pass
+    //any one words match -> pass
     //return number of correct words and its contents
-    public func findAccuracy(myNumber : Int) -> (Int,String) {
+    public func findAccuracy() -> (Int,String) {
         //error words
         var filterWords = ""
-        testResults = testContent(number : myNumber)
+        //testResults = selectedChart[myNumber]
         //var correctChar = Int()
         var re1Arr = Array<String>()//input words
         var re2Arr = Array<String>()//test words
@@ -663,15 +650,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         for i in testResults.characters{
             re2Arr.append(String(i))
         }
-        
-//        for i in 0...(re1Arr.count - 1){
-//            if i > 11{
-//                break;
-//            }
-//            if (re1Arr[i] == re2Arr[i]){
-//                correctChar += 1
-//            }
-//        }
         
         let commonWords = re1Arr.filter(re2Arr.contains)
         for a in re2Arr{
@@ -776,7 +754,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         } else {
             
             //start to record the time
+            
             self.showContents(times: testNumbers + 1)
+            
             try! startRecording()
             recordButton.setTitle("停止錄音", for: [])
             self.beforeTime = Date()
@@ -817,10 +797,18 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.recordButton.isHidden = true
                 self.errorNum[self.testNumbers] = error! //手动计入错字数
                 self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
+                
                 //prepare for the test
+                if(self.testNumbers<18){
+                self.testNumbers += 1
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-                self.testNumbers += 1
+                }
+                
+                else{
+                    self.recordButton.isHidden = true
+                    self.stopTest()
+                }
 
             }
             
@@ -852,7 +840,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         //record the time interval(according to definition)
         let nowTime = Date()
         var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
-        let (correctWords, filterWords) = findAccuracy(myNumber: testNumbers + 1)
+        let (correctWords, filterWords) = findAccuracy()
         
         
         //--------------------------------------------------------------record for databse
@@ -867,8 +855,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         //timecost
         costTime.append(timeSpent)
         
-        //testContent(random pick)
-        selectedChart.append(testContent(number : testNumbers + 1))
+        //testContent
+        selectedChart.append(testResults)
         
         
         //special case
@@ -883,9 +871,16 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         self.timeSpent.append(timeSpent)
         textView.text = ""
         
+        //一次测试最多19项
+        if(self.testNumbers == 19){
+            stopTest()
+        }
+        
+        
         // 手动模式下输入错字，重新计算timespent
         if(testMode == "手動"){
-            manualInsert(timeSpent: costTime[self.testNumbers])
+                manualInsert(timeSpent: costTime[self.testNumbers])
+
         }
         
         if(testMode == "自動"){
@@ -895,10 +890,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
             }
+            else{stopTest()}
+        }
                 
-            else{
-                stopTest()
-            }}
         
     }
 }

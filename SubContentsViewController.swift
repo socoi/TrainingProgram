@@ -155,7 +155,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
-        if case (10, 0) = (indexPath.column, indexPath.row) {
+        if case (13, 0) = (indexPath.column, indexPath.row) {
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
             cell.label.text = "第幾次測試: " + String(testCase)
@@ -327,20 +327,20 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         //let lineChart = PNLineChart(frame: CGRect(x: 0.0, y: 0, width: fullScreenSize.width - 300, height: fullScreenSize.height - 300))
         
         
+        //logmar计算. 40cm从1.5开始, 13cm从2.0开始. -0.1递减
         for i in 1...19{
-            if(i < 5){
-            let s = String(format: "%1.2f", Double(i) * 0.1 - 0.4 )
-            let t = ((Double(i) * 0.1 - 0.4) * 100).rounded() / 100
-            xValueLabel.append(t)
-            xLabel.append(s)
-            }
-            else{
-            let value = Double(i + Int(distanceVary) - 5) * 0.1
+//            if(i < 5){
+//            let s = String(format: "%1.2f", Double(i) * 0.1 - 0.4 )
+//            let t = ((Double(i) * 0.1 - 0.4) * 100).rounded() / 100
+//            xValueLabel.append(t)
+//            xLabel.append(s)
+//            }
+//            let value = Double(i + Int(distanceVary) - 5) * 0.1
+            let value = -0.5 + Double((Int(distanceVary) + i)) * 0.1
             let s = String(format: "%1.2f", value)
             let t = (value * 100).rounded() / 100
             xValueLabel.append(t)
             xLabel.append(s)
-            }
         }
     
         lineChart.yLabelFormat = "%1.2f"

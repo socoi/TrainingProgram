@@ -5,11 +5,11 @@
 
 import UIKit
 
-class DemoViewController: UIViewController {
+class temp: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.performSegue(withIdentifier: "MNReadDemo", sender: self)
     }
  
     override func viewWillAppear(_ animated: Bool) {

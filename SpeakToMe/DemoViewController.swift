@@ -9,7 +9,7 @@
 import UIKit
 import Speech
 
-public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
+public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     // MARK: Properties
     
     //zh-HK广东话, zh普通话
@@ -21,9 +21,8 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
     
     private let audioEngine = AVAudioEngine()
     
-    @IBOutlet var textView : UITextView!
-    
-    @IBOutlet var recordButton : UIButton!
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var recordButton: UIButton!
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -61,7 +60,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
     
 
     
-    public let readingChart = ["每個人都主宰著自己的命運","實踐是通往知識的唯一道路"]
+    public var readingChart = ["每個人都主宰著自己的命運","實踐是通往知識的唯一道路"]
     
     public func numberOfComponents(in pickerView: UIPickerView) -> Int {return 1}
     public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -83,26 +82,31 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
         }
     }
     
-    
     public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        countDown()
+        super.viewDidAppear(false)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
+        let optionMenu = UIAlertController(title: "MNRead 示範",message:"", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "開始", style: .cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+            self.countDownNumber = 4
+            self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+        })
+        optionMenu.addAction(okAction)
+        optionMenu.popoverPresentationController?.sourceView = self.textView
+        let t1 = self.fullScreenSize.height
+        let t2 = self.fullScreenSize.width
+        
+        optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
+        optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+        self.present(optionMenu, animated: true, completion: nil)
     }
     
     
-    public func testContent(number : Int ) -> String{
-        let numCount = readingChart.count
-        var arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
-        for _ in 1...2{
-            //存放第一次测试取的编号，保证两次测试没有相同内容
-            if(!testCases.contains(arrayKey) && !testedCases.contains(arrayKey)){
-                testCases.append(arrayKey)
-                testedCases.append(arrayKey)
-                break
-            }
-            else{ arrayKey = Int(arc4random_uniform(UInt32(numCount)))}
-        }
-        return readingChart[testCases[number - 1]]
+    public func testContent(num : Int) -> String{
+        return readingChart[num - 1]
     }
     
     //after countdown start test automatically
@@ -171,21 +175,14 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
     
     
     public func showContents(times : Int){
-        switch times{
-        case 1 : contents(str: testContent(number:1), num : 1)
-        default : stopTest()
-        }
-    }
+        contents(str: testContent(num: times), num : times)}
     
     
     public func stopTest(){
-        
-        //全部测试结束
-        if(self.mnread_num == 1){
+            recordButton.isHidden = true
             let optionMenu = UIAlertController(title: "測試結束", message: inputResults, preferredStyle: .alert)
             let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
                 (alert: UIAlertAction!) -> Void in
-                self.performSegue(withIdentifier: "ReturnMain", sender: self)
             })
             
             optionMenu.addAction(okAction)
@@ -196,36 +193,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
             optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
             optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
             self.present(optionMenu, animated: true, completion: nil)
-        }
-            
-            
-        else //准备另一个测试
-        {
-            let s1:String = "第1次測試結束"
-            let s2:String = "開始第2次測試"
-            self.mnread_num -= 1
-            let optionMenu = UIAlertController(title: s1, message: inputResults, preferredStyle: .alert)
-            //        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
-            //                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
-            //                ])
-            //        optionMenu.setValue(attributedString, forKey: "continue")
-            let okAction = UIAlertAction(title: s2, style: .cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                
-                self.recordButton.isHidden = true
-                self.countDownNumber = 4
-                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-            })
-            optionMenu.addAction(okAction)
-            optionMenu.popoverPresentationController?.sourceView = textView
-            let t1 = fullScreenSize.height
-            let t2 = fullScreenSize.width
-            
-            optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:40,height:40)
-            optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-            self.present(optionMenu, animated: true, completion: nil)
-            
-        }
+        
     }
     
     
@@ -233,6 +201,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        self.setNavigationBarItem()
         
         errpickView.delegate = self
         errpickView.dataSource = self
@@ -253,6 +222,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
         var language : [String:String] = [ "廣東話": "zh-HK", "國語": "zh-TW"]
         speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language["國語"]!))!
         
+        
     }
     
     
@@ -262,7 +232,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
     public func findAccuracy(myNumber : Int) -> (Int,String) {
         //error words
         var filterWords = ""
-        testResults = testContent(number : myNumber)
+        testResults = testContent(num: myNumber)
         //var correctChar = Int()
         var re1Arr = Array<String>()//input words
         var re2Arr = Array<String>()//test words
@@ -429,18 +399,15 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
             (alert: UIAlertAction!) -> Void in
             
             let login = (optionMenu.textFields?.first)! as UITextField
-            
-            if (login.text != ""){
-                let error = Int(login.text!)
+                self.testNumbers += 1
+                if(self.testNumbers == 2 ){
+                    self.stopTest()
+                }
+                else{
                 self.recordButton.isHidden = true
-                self.errorNum[self.testNumbers] = error! //手动计入错字数
-                self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
-                //prepare for the test
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-                self.testNumbers += 1
-                
-            }
+                }
             
         })
         
@@ -486,7 +453,7 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
         costTime.append(timeSpent)
         
         //testContent(random pick)
-        selectedChart.append(testContent(number : testNumbers + 1))
+        //selectedChart.append(testContent(number : testNumbers + 1))
         
         
         //special case
@@ -502,9 +469,12 @@ public class TestDemo: UIViewController, SFSpeechRecognizerDelegate, UIPickerVie
         textView.text = ""
         
         // 手动模式下输入错字，重新计算timespent
-//        if(testMode == "手動"){
+        if(self.testNumbers < 2){
             manualInsert(timeSpent: costTime[self.testNumbers])
-//        }
+        }
+            else{
+            stopTest()
+        }
         
 //        if(testMode == "自動"){
 //            if(correctWords > 1){

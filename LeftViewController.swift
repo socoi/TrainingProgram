@@ -43,7 +43,7 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
         let swiftViewController = storyboard.instantiateViewController(withIdentifier: "MNReadViewController") as! MNReadViewController
         self.swiftViewController = UINavigationController(rootViewController: swiftViewController)
         
-        let DemoViewController = storyboard.instantiateViewController(withIdentifier: "DemoController") as! DemoViewController
+        let DemoViewController = storyboard.instantiateViewController(withIdentifier: "DemoViewController") as! DemoViewController
         self.DemoViewController = UINavigationController(rootViewController: DemoViewController)
         
         let goViewController = storyboard.instantiateViewController(withIdentifier: "GoViewController") as! GoViewController
@@ -77,6 +77,10 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
         case .MNRead:
             self.slideMenuController()?.changeMainViewController(self.swiftViewController, close: true)
         case .Demo:
+            //重新初始化，demo跳转立刻开始测试
+            let DemoViewController = storyboard?.instantiateViewController(withIdentifier: "DemoViewController") as! DemoViewController
+            self.DemoViewController = UINavigationController(rootViewController: DemoViewController)
+            self.dismiss(animated: true, completion: {})
             self.slideMenuController()?.changeMainViewController(self.DemoViewController, close: true)
         case .go:
             self.slideMenuController()?.changeMainViewController(self.goViewController, close: true)
