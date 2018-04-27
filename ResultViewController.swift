@@ -193,6 +193,8 @@ extension ResultViewController : UITableViewDelegate {
         let userName = Expression<String>("userName")  //用户姓名
         let testTime = Expression<String>("testTime")  //测试当时的时间
         let testCase = Expression<Int>("testCase")  //第几段测试
+        let language = Expression<String>("language")
+        let testMode = Expression<String>("testMode")
 
         
         
@@ -332,6 +334,8 @@ extension ResultViewController : UITableViewDelegate {
             subContentsVC.testTime = user[testTime]
             subContentsVC.testCase = user[testCase]
             subContentsVC.distanceVary = user[distanceVary]
+            subContentsVC.language = user[language]
+            subContentsVC.testMode = user[testMode]
      }
         self.navigationController?.pushViewController(subContentsVC, animated: true)
     }

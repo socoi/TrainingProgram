@@ -9,8 +9,7 @@ import SpreadsheetView
 
 
 
-class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, SpreadsheetViewDelegate {
-
+class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, SpreadsheetViewDelegate  {
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -39,41 +38,46 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     public var userBirth = String()
     public var testTime = String()
     public var testCase = Int()
+    public var language = String()
+    public var testMode = String()
     
+    public var path = String()
+    public var songPlayer = AVAudioPlayer()
+
     
     let rows = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"]
-    let columns = ["完成時間", "正確句子", "測試錯字", "錯字數目", "LogMar"]
+    let columns = ["完成時間", "正確句子", "測試錯字", "錯字數目", "LogMar", "錄音"]
     
                      
     let evenRowColor = UIColor(red: 0.914, green: 0.914, blue: 0.906, alpha: 1)
     let oddRowColor: UIColor = .white
     
     var inputData = [
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""],
-        ["", "", "", "", ""]
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""],
+        ["", "", "", "", "", ""]
     ]
     
     
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, heightForRow row: Int) -> CGFloat {
         if case 0 = row {
-            return 120 //24
+            return 80 //120
         } else if case 1 = row {
             return 32
         } else if case 2 = row{
@@ -84,6 +88,9 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         }
         else if case 6 = row {
             return 30
+        }
+        else if case 7 = row {
+            return 45
         }
         else {
             return 70
@@ -155,18 +162,33 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
-        if case (13, 0) = (indexPath.column, indexPath.row) {
+        if case (11, 0) = (indexPath.column, indexPath.row) {
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
-            cell.label.text = "第幾次測試: " + String(testCase)
+            cell.label.text = "測試: " + String(testCase)
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+        if case (13, 0) = (indexPath.column, indexPath.row) {
+            let distance : [Double : String] = [1.0: "40cm", 2.0 :"33cm" , 3.0 : "25cm" , 4.0: "20cm", 5.0: "16cm", 6.0: "13cm"]
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "距離: " + distance[distanceVary]!
+            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
+            cell.label.sizeToFit()
+            return cell}
+            
+        if case (15, 0) = (indexPath.column, indexPath.row) {
+            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
+            cell.label.textColor = UIColor.blue
+            cell.label.text = "語言: " + language
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
         if case (17, 0) = (indexPath.column, indexPath.row) {
-            let distance : [Double : String] = [1.0: "40cm", 2.0 :"33cm" , 3.0 : "25cm" , 4.0: "20cm", 5.0: "16cm", 6.0: "13cm"]
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
-            cell.label.text = "測試距離: " + distance[distanceVary]!
+            cell.label.text = "模式: " + testMode
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
 
@@ -196,7 +218,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             let text = inputData[indexPath.column - 1][indexPath.row - 2]
             if !text.isEmpty {
                 
-                //调整正确句子和测试错字两行
+                //调整正确句子和测试错字
                 if(indexPath.row - 2 == 2 || indexPath.row - 2 == 1){
                 cell.label.numberOfLines = 3
                 cell.label.lineBreakMode = .byWordWrapping
@@ -210,6 +232,28 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
                 cell.color = color.withAlphaComponent(0.2)
                 cell.borders.top = .solid(width: 2, color: color)
                 cell.borders.bottom = .solid(width: 2, color: color)
+                }
+                //添加按钮
+                if(indexPath.row - 2 == 5){
+                    cell.label.layoutMargins = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 0)
+                    cell.label.font = UIFont(name:"Avenir", size:60)
+                    cell.label.text = text
+                    //let color = columnsColor[indexPath.column - 1]
+                    let color : UIColor = .black
+                    cell.label.textColor = color
+                    cell.color = color.withAlphaComponent(0.2)
+                    
+                    let button : UIButton = UIButton(type:UIButtonType.custom) as UIButton
+                    button.setImage(UIImage(named: "play.png"), for: .normal)
+                    button.frame = CGRect(origin: CGPoint(x: 200,y :60), size: CGSize(width: 40, height: 24))
+                    button.tag = indexPath.column
+                    let cellHeight: CGFloat = 44.0
+                    button.center = CGPoint(x: view.bounds.width / 45, y: cellHeight / 2.0) //调整按钮位置
+                    button.setTitleColor(.blue, for: .normal)
+                    button.addTarget(self, action: #selector(playMusic), for: UIControlEvents.touchUpInside)
+                    button.setTitle("Add", for: UIControlState.normal)
+                    
+                    cell.addSubview(button)
                 }
                 else{
                 cell.label.text = text
@@ -237,6 +281,50 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         print("Selected: (row: \(indexPath.row), column: \(indexPath.column))")
     }
     
+    func updateViewData(){
+        //update inputdata
+        
+        let endPoint = costTime.filter{$0 != 0}
+        
+        for i in 0...18{
+            if(costTime[i] != 0){
+                self.inputData[i][0] = String(format: "%1.2f", costTime[i])}
+            if(readChart[i] != "None"){
+                self.inputData[i][1] = readChart[i]}
+            if(errorWord[i] != "None"){
+                self.inputData[i][2] = errorWord[i]}
+            if(errorNum[i] != -99){
+                self.inputData[i][3] = String(errorNum[i])}
+            if(xValueLabel[18 - i] != -99 && i < endPoint.count){
+                self.inputData[i][4] = String(xValueLabel[18 - i])
+            }
+            if(i<endPoint.count){
+                self.inputData[i][5] = "_"
+            }
+        }
+    }
+    
+    //播放音乐
+    func playMusic(sender: UIButton!) {
+        let row = sender.tag
+        let fileName = self.userID + "_" + self.userName + "_test" + String(self.testCase) + "_" + String(row) + ".m4a"
+        let audioFileName = path + "/" + fileName
+        
+        do{
+        songPlayer = try AVAudioPlayer(contentsOf: URL(string: audioFileName)!)
+        if(songPlayer.isPlaying){
+            songPlayer.stop()}
+        songPlayer.prepareToPlay()
+            songPlayer.play()
+            
+        }
+        
+        catch{
+            print("failture")
+        }
+        
+        
+    }
     
 
     //------------------------------------------------------------------------------------------------
@@ -275,37 +363,19 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         return (0.0 , 0)
     }
     
-    
-    func updateViewData(){
-        //update inputdata
-        
-        let endPoint = costTime.filter{$0 != 0}
-        
-        for i in 0...18{
-            if(costTime[i] != 0){
-                self.inputData[i][0] = String(format: "%1.2f", costTime[i])}
-            if(readChart[i] != "None"){
-                self.inputData[i][1] = readChart[i]}
-            if(errorWord[i] != "None"){
-                self.inputData[i][2] = errorWord[i]}
-            if(errorNum[i] != -99){
-                self.inputData[i][3] = String(errorNum[i])}
-            if(xValueLabel[18 - i] != -99 && i < endPoint.count){
-                self.inputData[i][4] = String(xValueLabel[18 - i])
-            }
-                
-        }
-        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(false)
+        self.path = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory, .userDomainMask, true
+            ).first!
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         // customize sheet
         self.spreadsheetView.dataSource = self
         self.spreadsheetView.delegate = self
+
         
         spreadsheetView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         

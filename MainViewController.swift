@@ -22,7 +22,6 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         let path = NSSearchPathForDirectoriesInDomains(
             .documentDirectory, .userDomainMask, true
             ).first!
@@ -39,6 +38,8 @@ class MainViewController: UIViewController {
         let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
         let distanceVary = Expression<Double>("distanceVary")
         let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase + testMode)
+        let language  = Expression<String>("language") //广东话,普通话
+        let testMode = Expression<String>("testMode") //自动或者手动
 
         
         let timeSpent1 = Expression<Double>("timeSpent1")  //每段话时间（需log公式计算)
@@ -140,7 +141,6 @@ class MainViewController: UIViewController {
         let errorNum17 = Expression<Int>("errorNum17")
         let errorNum18 = Expression<Int>("errorNum18")
         let errorNum19 = Expression<Int>("errorNum19")
-        let testMode = Expression<String>("testMode")
         
         let logMar1 = Expression<Double>("logMar1")   //LogMar
         let logMar2 = Expression<Double>("logMar2")
@@ -170,7 +170,25 @@ class MainViewController: UIViewController {
 
         
         
-        //clean before DB
+        //clean all cache
+//        let fileMgr = FileManager()
+//        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+//        if let directoryContents = try? fileMgr.contentsOfDirectory(atPath: dirPath)
+//        {
+//            for path in directoryContents
+//            {
+//                let fullPath = (dirPath as NSString).appendingPathComponent(path)
+//                do
+//                {
+//                    try fileMgr.removeItem(atPath: fullPath)
+//                    print("Files deleted")
+//                }
+//                catch let error as NSError
+//                {
+//                    print("Error deleting: \(error.localizedDescription)")
+//                }
+//            }
+//        }
         //try! db.run(testResults.drop())
         
         
@@ -183,6 +201,8 @@ class MainViewController: UIViewController {
             t.column(sex)
             t.column(age)
             t.column(birth)
+            t.column(language)
+            t.column(testMode)
             t.column(testCase, defaultValue: 0)
             t.column(timeSpent1, defaultValue: 0)
             t.column(timeSpent2, defaultValue: 0)
@@ -304,8 +324,6 @@ class MainViewController: UIViewController {
             t.column(logMar17, defaultValue: -99)
             t.column(logMar18, defaultValue: -99)
             t.column(logMar19, defaultValue: -99)
-            t.column(testMode, defaultValue: "None")
-         
         })
         
         

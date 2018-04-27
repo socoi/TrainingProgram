@@ -80,7 +80,7 @@ class LeftViewController : UIViewController, LeftMenuProtocol {
             //重新初始化，demo跳转立刻开始测试
             let DemoViewController = storyboard?.instantiateViewController(withIdentifier: "DemoViewController") as! DemoViewController
             self.DemoViewController = UINavigationController(rootViewController: DemoViewController)
-            self.dismiss(animated: true, completion: {})
+            //self.dismiss(animated: true, completion: {})
             self.slideMenuController()?.changeMainViewController(self.DemoViewController, close: true)
         case .go:
             self.slideMenuController()?.changeMainViewController(self.goViewController, close: true)

@@ -60,7 +60,7 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
     
 
     
-    public var readingChart = ["每個人都主宰著自己的命運","實踐是通往知識的唯一道路"]
+    public var readingChart = ["每個人都主宰著自己的命運","實踐是通往知識的唯一道路 "]
     
     public func numberOfComponents(in pickerView: UIPickerView) -> Int {return 1}
     public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -85,6 +85,11 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
     }
+    
+//    public override func viewWillDisappear(_ animated: Bool) {
+//         super.viewWillDisappear(false)
+//         self.dismiss(animated: false, completion: nil)
+//    }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)

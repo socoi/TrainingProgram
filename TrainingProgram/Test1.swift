@@ -12,20 +12,17 @@ import UIKit
 import Speech
 import SQLite
 
-public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
+public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, AVAudioRecorderDelegate{
     // MARK: Properties
     
     //zh-HK广东话, zh普通话
     private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "zh-HK"))!
-    
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    
     private var recognitionTask: SFSpeechRecognitionTask?
-    
     private let audioEngine = AVAudioEngine()
+    private var audioRecorder: AVAudioRecorder!     //录音
     
     @IBOutlet var textView : UITextView!
-    
     @IBOutlet var recordButton : UIButton!
     
     let fullScreenSize = UIScreen.main.bounds.size
@@ -80,6 +77,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public let agecontent = Array(5...100)
     public let errcontent = Array(0...12)
    
+
+    public let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 
 
     
@@ -445,6 +444,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         let userBirth = Expression<String>("birth")
         let distanceVary = Expression<Double>("distanceVary")
         let testCase = Expression<Int>("testCase") //第几次测试
+        let language = Expression<String>("language")
+        let testMode = Expression<String>("testMode")
         
         // updated information
         
@@ -459,7 +460,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             userBirth <- self.userBirth,
             testTime <- dateString,
             distanceVary <- self.distanceVary,
-            testCase <- self.mnread_case + 1
+            testCase <- self.mnread_case + 1,
+            language <- self.testLanguage,
+            testMode <- self.testMode
         )
         try! db.run(insert)
         
@@ -586,12 +589,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         agepickView.selectRow(45, inComponent:0, animated:true)
         sexpickView.selectRow(0, inComponent:0, animated:true)
         errpickView.selectRow(0, inComponent:0, animated:true)
-
         
         
         // Disable the record buttons until authorization has been granted.
         recordButton.isHidden = true
-        
         
         // let textView horizon center
         textView.textAlignment = .center
@@ -602,7 +603,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         textView.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle(rawValue: "新細明體"))
         
         //get color and distance
-        let fontblue:UIColor = UIColor(displayP3Red: CGFloat(192.0/255.0), green: CGFloat(206.0/255.0), blue: CGFloat(235.0/255.0), alpha: 1)
+        let fontblue:UIColor = UIColor(displayP3Red: CGFloat(65.0/255.0), green: CGFloat(105.0/255.0), blue: CGFloat(225.0/255.0), alpha: 1)
         let fontgreen = UIColor(displayP3Red: CGFloat(144.0/255.0), green: CGFloat(238.0/255.0), blue:CGFloat(144.0/255.0), alpha: 1)
         var colors : [String:UIColor] = ["白色": UIColor.white,
                 "黑色":UIColor.black,
@@ -657,13 +658,21 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 filterWords += a
             }
         }
-        return (commonWords.count , filterWords)
+        return (filterWords.count , filterWords)
 }
     
-
     private func startRecording() throws {
         
         self.inputResults = ""
+        let fileName = self.userId + "_" + self.userName + "_test" + String(self.mnread_case + 1) + "_" + String(testNumbers + 1) + ".m4a"
+        let audioFilename = paths.appendingPathComponent(fileName)
+
+        let settings = [
+            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+            AVSampleRateKey: 12000,
+            AVNumberOfChannelsKey: 1,
+            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        ]
 
         // Cancel the previous task if it's running.
         if let recognitionTask = recognitionTask {
@@ -675,6 +684,11 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         try audioSession.setCategory(AVAudioSessionCategoryRecord)
         try audioSession.setMode(AVAudioSessionModeMeasurement)
         try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+        
+        //开始录音
+        audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+        audioRecorder.delegate = self
+        audioRecorder.record()
         
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         			
@@ -746,6 +760,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     @IBAction func recordButtonTapped() {
         if audioEngine.isRunning {
+            audioRecorder.stop()
             audioEngine.stop()
             recognitionRequest?.endAudio()
             recordButton.isEnabled = false
@@ -754,9 +769,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         } else {
             
             //start to record the time
-            
             self.showContents(times: testNumbers + 1)
-            
             try! startRecording()
             recordButton.setTitle("停止錄音", for: [])
             self.beforeTime = Date()
@@ -795,6 +808,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             if (login.text != ""){
                 let error = Int(login.text!)
                 self.recordButton.isHidden = true
+                self.errorWord[self.testNumbers] = ""  //手动情况不记录测试错字
                 self.errorNum[self.testNumbers] = error! //手动计入错字数
                 self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
                 
@@ -840,7 +854,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         //record the time interval(according to definition)
         let nowTime = Date()
         var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
-        let (correctWords, filterWords) = findAccuracy()
+        let (errorWordsNum, filterWords) = findAccuracy()
         
         
         //--------------------------------------------------------------record for databse
@@ -850,7 +864,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         errorWord.append(filterWords)
         
         //erroNumber
-        errorNum.append(12 - correctWords)
+        errorNum.append(errorWordsNum)
         
         //timecost
         costTime.append(timeSpent)
@@ -863,8 +877,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         if(timeSpent == 0){
             self.timeSpent.append(timeSpent)
         }
-        if(correctWords != 0 ){
-            timeSpent = log10(Double(correctWords) / timeSpent * 60)
+        
+        if(errorWordsNum != 12 ){
+            timeSpent = log10(Double(12 - errorWordsNum) / timeSpent * 60)
         }
         else { timeSpent = 0}
         
@@ -884,7 +899,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         }
         
         if(testMode == "自動"){
-            if(correctWords > 1){
+            if(errorWordsNum < 12){
                 testNumbers += 1
                 recordButton.isHidden = true
                 self.countDownNumber = 4

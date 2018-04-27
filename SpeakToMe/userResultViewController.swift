@@ -87,6 +87,7 @@ extension userResultViewController : UITableViewDelegate {
             let db = try! Connection("\(path)/db.sqlite3")
             let testResults = Table("testResults")
             let userid  = Expression<String>("userid")
+            var id = String()
 
 
             
@@ -94,10 +95,35 @@ extension userResultViewController : UITableViewDelegate {
             let currentText = currentCell.dataText?.text!
             let t = testResults.filter(userid == currentText!)
             
+            for user in try! db.prepare(t) {
+                id = user[userid]
+            }
+            
             try! db.run(t.delete())
             
             //            let sqliteSequence = Table("sqlite_sequence")
             //            try! db.run(sqliteSequence.delete())
+            
+            //删除录音记录
+            let fileMgr = FileManager()
+            let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+            if let directoryContents = try? fileMgr.contentsOfDirectory(atPath: dirPath)
+            {
+                for path in directoryContents
+                {
+                    let fullPath = (dirPath as NSString).appendingPathComponent(path)
+                    do
+                    {
+                        if(path.prefix(id.count) == id){
+                        try fileMgr.removeItem(atPath: fullPath)
+                            print("Files deleted")}
+                    }
+                    catch let error as NSError
+                    {
+                        print("Error deleting: \(error.localizedDescription)")
+                    }
+                }
+            }
             
             //refresh the page
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
