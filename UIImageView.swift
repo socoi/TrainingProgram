@@ -11,13 +11,22 @@ import UIKit
 
 extension UIImageView {
     
-    func setRandomDownloadImage(_ width: Int, height: Int) {
+    func setRandomDownloadImage(width: Int, height: Int, type: String) {
+        var url = URL(string: "http://test")!
         if self.image != nil {
             self.alpha = 1
             return
         }
         self.alpha = 0
-        let url = URL(string: "http://lorempixel.com/\(width)/\(height)/")!
+        switch type{
+        case "profile" :
+            url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/SoLogo.png")!
+        case "background":
+            url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/polyu.png")!
+            self.alpha = 0.2
+        default:
+            url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/user.png")!
+        }
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 15
         configuration.timeoutIntervalForResource = 15

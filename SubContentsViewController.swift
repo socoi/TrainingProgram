@@ -26,7 +26,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     public var xValueLabel = [Double]() // 处理后的x值(正负方向公式不同)
     public var xValue = [Double]() //从左到右坐标x的值(Double)
     public var theta = Double()
-    public var regressionIndex = [Double]()
+    public var regressionIndex = [Double]()  //[交点x坐标，交点y坐标,logscope, distanceVary]
     public var midIndex = Int()
     @IBOutlet weak var mnreadChart: UIView!
     @IBOutlet weak var spreadsheetView: SpreadsheetView!
@@ -43,6 +43,14 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     
     public var path = String()
     public var songPlayer = AVAudioPlayer()
+    public var curve_data = String()
+    public let semaphore = DispatchSemaphore(value: 0)
+    public var delta1 = Double()
+    public var delta2 = Double()
+    public var delta3 = Double()
+
+
+
 
     
     let rows = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"]
@@ -363,12 +371,14 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         return (0.0 , 0)
     }
     
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
         self.path = NSSearchPathForDirectoriesInDomains(
             .documentDirectory, .userDomainMask, true
             ).first!
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -450,9 +460,9 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         })
         
         //startIndex, if all test pass start from 0
-        var startIndex = yLabel.count - (yLabel.filter{$0 != 0.0}).count - 1
-        if(startIndex == -1){ startIndex = 0}
-        regressionIndex.append(Double(startIndex))
+        //var startIndex = yLabel.count - (yLabel.filter{$0 != 0.0}).count - 1
+        //if(startIndex == -1){ startIndex = 0}
+        //regressionIndex.append(Double(startIndex))
         
         yLabel = yLabel.filter{$0 != 0.0}
         xLabel = xLabel.reversed()
@@ -466,51 +476,72 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             //initial calculatio
             xValue.append(xValueLabel[19 - yLabel.count + i])
         }
+        
+        // 传到服务器上计算regression
+        // 保证数据先传回
+        semaphore.signal()
+        dataUploadRequest(x_value: xValue, y_value: yLabel, userName: userName, userID: userID, completionHandler: { (data) in
+                print(data)
+            let delta = data.components(separatedBy: " ")
+            do{
+            self.delta1 = Double(delta[0])!
+            self.delta2 = Double(delta[1])!
+            self.delta3 = Double(delta[2].dropLast().dropLast())! //去掉\n
+            }
+            catch{
+                print("did not get number, please return")
+            }
+            })
+    
+//            //////////// 原始计算curve_fitting的方法（错误的) //////////////
+//            //交点x的准确坐标
+//            let resultX = self.self.linearRegression(self.xValue, self.yLabel)
+//            self.regressionIndex.append(resultX)
+//            self.regressionIndex.append(self.theta)
+//            self.regressionIndex.append(self.distanceVary)
+        
+              self.regressionIndex.append(delta3)
+              self.regressionIndex.append(delta1)
+              self.regressionIndex.append(delta2)
+              self.regressionIndex.append(distanceVary)
+        
+        
+            _ = semaphore.wait(timeout: DispatchTime.distantFuture) //等任务完成
 
+            //3个交点的y坐标
+            //self.regressionLabel = [self.yLabel[0] , self.theta , self.theta]
+            self.regressionLabel = [self.yLabel[0] , delta1 , delta1]
+            
+            
+            let regressionData = PNLineChartData()
+            regressionData.color = PNRed
+            regressionData.itemCount = self.regressionLabel.count
+            regressionData.inflexPointStyle = .Square
+            regressionData.getData = ({
+                (index: Int) -> PNLineChartDataItem in
+                let yValue = CGFloat(self.regressionLabel[index])
+                let item = PNLineChartDataItem(y: yValue)
+                return item
+            })
         
-        //交点x的准确坐标
-        let resultX = linearRegression(xValue, yLabel)
-        regressionIndex.append(resultX)
-        regressionIndex.append(theta)
-        regressionIndex.append(distanceVary)
-       
-        //作图中3个y坐标
-        regressionLabel = [yLabel[0] , theta , theta]
-        
-        
-        let regressionData = PNLineChartData()
-        regressionData.color = PNRed
-        regressionData.itemCount = regressionLabel.count
-        regressionData.inflexPointStyle = .Square
-        regressionData.getData = ({
-            (index: Int) -> PNLineChartDataItem in
-            let yValue = CGFloat(self.regressionLabel[index])
-            let item = PNLineChartDataItem(y: yValue)
-            return item
-        })
-        
- //// 暂时不用画回归线 ////////////////////////////////////////////////////////////////////////////////////////////
-        if (theta,midIndex) != (0.0 ,0){
-            //lineChart.chartData = [data, regressionData]}
-            lineChart.chartData = [data]}
-        else {
-            lineChart.chartData = [data]
-        }
-        lineChart.strokeChart(regressionIndex)
-        
-        
-        //填充表格信息
-        updateViewData()
-     
-        
-        
-        // Change the chart you want to present here
-        //self.view.addSubview(lineChart)
-        self.mnreadChart.addSubview(lineChart)
-        
-        
+            if (self.theta,self.midIndex) != (0.0 ,0){
+                lineChart.chartData = [data, regressionData]}
+                //lineChart.chartData = [data]}
+            else {
+                lineChart.chartData = [data, regressionData]
+            }
+            lineChart.strokeChart(self.regressionIndex)
+            
+            ////para：1. start from which index 2. scope
+            //填充表格信息
+            self.updateViewData()
+            
+            
+            
+            // Change the chart you want to present here
+            //self.view.addSubview(lineChart)
+            self.mnreadChart.addSubview(lineChart)
+            
     }
     
 }
-
-

@@ -56,6 +56,7 @@
 		639F34CF1E52E52600D0F47C /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 639F34CE1E52E52600D0F47C /* Asset.xcassets */; };
 		639F34D51E53081500D0F47C /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34D41E53081500D0F47C /* MainViewController.swift */; };
 		639F35451E53406300D0F47C /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		63BDE15521639A8800A4B74E /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BDE15421639A8800A4B74E /* ServerData.swift */; };
 		63C78B0C1E5351C500479725 /* PNBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B011E5351C500479725 /* PNBar.swift */; };
 		63C78B0D1E5351C500479725 /* PNBarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B021E5351C500479725 /* PNBarChart.swift */; };
 		63C78B0E1E5351C500479725 /* PNChartLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B031E5351C500479725 /* PNChartLabel.swift */; };
@@ -139,6 +140,7 @@
 		639F34D41E53081500D0F47C /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = SOURCE_ROOT; };
 		639F35491E53410200D0F47C /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCharts.framework; path = "/Users/macuser/Downloads/So program/TrainingProgram/SwiftCharts.framework"; sourceTree = "<absolute>"; };
 		63A7E72E1F5058AA001B475A /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftCharts.framework; sourceTree = "<group>"; };
+		63BDE15421639A8800A4B74E /* ServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerData.swift; sourceTree = "<group>"; };
 		63C78B011E5351C500479725 /* PNBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBar.swift; path = chart/PNBar.swift; sourceTree = "<group>"; };
 		63C78B021E5351C500479725 /* PNBarChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBarChart.swift; path = chart/PNBarChart.swift; sourceTree = "<group>"; };
 		63C78B031E5351C500479725 /* PNChartLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNChartLabel.swift; path = chart/PNChartLabel.swift; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 				639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */,
 				639F34C81E52D76D00D0F47C /* SubContentsViewController.storyboard */,
 				639F34D41E53081500D0F47C /* MainViewController.swift */,
+				63BDE15421639A8800A4B74E /* ServerData.swift */,
 			);
 			name = TrainingProgram;
 			path = SpeakToMe;
@@ -510,6 +513,7 @@
 				639F34B41E52D2DF00D0F47C /* temp.swift in Sources */,
 				639F34A41E52D15A00D0F47C /* UIImageView.swift in Sources */,
 				639F34A71E52D15A00D0F47C /* UIViewController.swift in Sources */,
+				63BDE15521639A8800A4B74E /* ServerData.swift in Sources */,
 				639F345F1E517E0500D0F47C /* MNReadViewController.swift in Sources */,
 				639F345C1E517E0500D0F47C /* Test1.swift in Sources */,
 				639F34891E52BB1C00D0F47C /* SlideMenuController.swift in Sources */,

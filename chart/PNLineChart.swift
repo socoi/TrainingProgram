@@ -294,7 +294,7 @@ class PNLineChart: UIView{
                 }
                 
                 let x: CGFloat = chartMargin * 2.0 + (CGFloat(index) * xLabelWidth)
-                let y: CGFloat = chartCavanHeight - (innerGrade * chartCavanHeight!)
+                let y: CGFloat = chartCavanHeight - (innerGrade * chartCavanHeight!) + 5   //对齐
                 
                 switch chartData.inflexPointStyle {
                 // Cycle Style Point
@@ -306,8 +306,9 @@ class PNLineChart: UIView{
                     
                     let textLabel = UITextField(frame : CGRect(x: x - inflexionWidth/2.0, y: y - inflexionWidth/2.0 + 7, width: 60, height: 10))
                     
-//精度
-                    text[index] = String(format: "%.2f",Double(yValue))
+                    //精度,0不显示
+                    if yValue != 0{
+                    text[index] = String(format: "%.3f",Double(yValue))}
                     textLabel.text = text[index]
                     self.addSubview(textLabel)
                     
@@ -338,7 +339,7 @@ class PNLineChart: UIView{
             }
             }
             
-            //case2 : least square regression( two stright lines )
+            //case2 : two stright lines 
             if(lineIndex == 1){
             for index in 0..<chartData.itemCount {
                 yValue = CGFloat(chartData.getData(index).y)
@@ -350,11 +351,21 @@ class PNLineChart: UIView{
                 }
                 
                 //calculate intersect position
-                let xIntersect = controlIndex[1] / (0.1 * controlIndex[3])
+                //
+                
+                //第一个index坐标根据不同的distance不同(eg: 1(40cm)-> -0.3) 3(25cm)->-0.1
+                let first_index = 0.1 * controlIndex[3] - 0.4
+                let xIntersect = (controlIndex[0] - first_index)/0.1
+                let scope = pow(M_E, controlIndex[2]) //e^delta[2]
+                let x_axis = (controlIndex[0] - controlIndex[1] / scope - first_index) / 0.1  //与x轴交点
                 var x: CGFloat = 0
                 
-                if(index == 0){x = chartMargin * 2.0 + CGFloat(controlIndex[0]) * xLabelWidth}
-                if(index == 1){x = chartMargin * 2.0 + CGFloat(3 + xIntersect) * xLabelWidth}//第三个x坐标为0
+                
+                
+                
+                //if(index == 0){x = chartMargin * 2.0 + CGFloat(controlIndex[0]) * xLabelWidth}
+                if(index == 0){x = chartMargin * 2.0 + CGFloat(x_axis) * xLabelWidth}
+                if(index == 1){x = chartMargin * 2.0 + CGFloat(xIntersect) * xLabelWidth}
                 if(index == 2){x = chartMargin * 2.0 + CGFloat(18) * xLabelWidth}
                 
                 let y: CGFloat = chartCavanHeight - (innerGrade * chartCavanHeight!)
@@ -371,10 +382,11 @@ class PNLineChart: UIView{
                     pointPath.close()
                     
                     if(index == 1){
-                    let textLabel = UITextField(frame : CGRect(x: x - inflexionWidth/2.0 - 60, y: y - inflexionWidth/2.0 - 40, width: 120, height: 10))
-                    textPoint[0] = String(format: "%.3f",Double(controlIndex[1]))
-                    textPoint[1] = String(format: "%.3f",Double(controlIndex[2]))
-                    textLabel.text = "(" + textPoint[0] + "," + textPoint[1] + ")"
+                    let textLabel = UITextView(frame : CGRect(x: x - inflexionWidth/2.0 - 40, y: y - inflexionWidth/2.0 - 65, width: 80, height: 40))
+                        
+                    textPoint[0] = String(format: "%.3f",Double(controlIndex[0]))
+                    textPoint[1] = String(format: "%.3f",Double(pow(M_E, controlIndex[1])))
+                        textLabel.text = "CPS: " + textPoint[0] + "\n" + "MRS: " + textPoint[1] + "\n"
                         self.addSubview(textLabel)}
                     
                     if index != 0 {

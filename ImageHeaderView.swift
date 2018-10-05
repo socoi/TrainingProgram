@@ -21,7 +21,7 @@ class ImageHeaderView : UIView {
         self.profileImage.clipsToBounds = true
         self.profileImage.layer.borderWidth = 1
         self.profileImage.layer.borderColor = UIColor.white.cgColor
-        self.profileImage.setRandomDownloadImage(80, height: 80)
-        self.backgroundImage.setRandomDownloadImage(Int(self.bounds.size.width), height: 160)
+        self.profileImage.setRandomDownloadImage(width: 80, height: 80, type: "profile")
+        //self.backgroundImage.setRandomDownloadImage(width: Int(self.bounds.size.width), height: 90, type: "background") //height: 160
     }
 }
