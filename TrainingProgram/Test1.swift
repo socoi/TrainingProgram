@@ -19,7 +19,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "zh-HK"))!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
-    private let audioEngine = AVAudioEngine()
+    private let audioEngine = AVAudioEngine()       //识别文本
     private var audioRecorder: AVAudioRecorder!     //录音
     
     @IBOutlet var textView : UITextView!
@@ -39,17 +39,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var userSex = String()
     public var userAge = Int()
     public var userBirth = String()
-    
-
-
-    
+        
     //record that shown in subcontent controller
     public var timeSpent = Array<Double>()//attention! - > (correct number/test time) * 60
     public var costTime = Array<Double>() // test time
     public var errorWord = Array<String>() //error words
     public var errorNum =  Array<Int>() //error number
     public var selectedChart = Array<String>() //random picked chart
-    //public var testCases = Array<Int>() //随机选取的readingchart的编号
+    public var readingChart = Array<String>() //define in Data.swift
     
 
 
@@ -61,7 +58,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var watchDistance = String() //depend watch distance adjust font size
     public var distanceVary = Double() //  pass to resultView controller
     public var testLanguage = String() //普通话或者粤语
-    public let fontSize = [77,62.5,49,38.5,30.5,24,20,16,12,9,8,6.5,5,4,2.5,2,1.5,1.1,0.9] //40cm :corresponse distance,77\
     public var testMode = String()  //自动或手动
 
     
@@ -79,25 +75,16 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
    
 
     public let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    public let semaphore = DispatchSemaphore(value: 2)
 
 
-    
-    
-    public var readingChart = ["我們年紀很小就舉行演奏會","小鳥兒飛到我家屋前的樹上","昨天大表姐到醫院探望叔叔","我在摩天輪上看見藍天白雲","媽媽每天給大文講一個故事","這篇文章描述了新年的景象","小妹妹還沒上學便開始認字","張小華忘記把課室的門關上","大文三歲已經開始創作詩歌","花香引來各種各樣的小昆蟲","打乒乓球是我愛的課外活動","小朋友喜歡坐在旋轉木馬上", "辛勤工作的人應該受到尊重","我學會用重複的句子來作詩","大笨象帶著五隻小河馬過河","姐姐和妹妹要做漂亮的花兒","蜻蜓早就停在荷葉上面休息","車站上的乘客焦急地等待著","小汽車緩慢地穿過這個山洞",
-                               
-        "妹妹吃下弟弟幫忙買的餅乾","他在一家電影公司擔任秘書","小貓在畫紙上踩了幾個腳印","木馬是小朋友最喜歡的玩具","沒有人知道這是誰的萬花筒","小明把聽過的故事描述出來","我在動物園裏看到了大笨象","今年我班的足球隊實力很強","他父親叫他寫信給歐陽先生","老鼠冒著生命危險去找食物","他希望在假期裡多參加活動","小朋友最喜歡坐在摩天輪上","他給我們搖來了最平穩的船","一群小螞蟻緩慢地爬上山頂","星期六父親帶弟弟去騎木馬","我在討論中清楚地表達意見","她繼續守護早已長大的孩子","魔術師把大西瓜放在袋子裏","爸爸給我講了這樣一個故事",
-        
-        
-        "哥哥把小狗的腳印變成花朵", "叔叔開車帶我們去郊外遊玩","紫紅色的袋子裏有一張廢紙","小明最喜歡飯後吃一個水果","威風的獵人走到危險的森林","這本書介紹了基本語文知識","猴子在樹上靈活地爬來爬去","小馬帶他走進美麗的大花園","大家輪流介紹自己喜愛的歌","上星期姑姑送給我一盒糖果","李大文可以認識美麗的植物","小美在聽木結他發出的聲音","他獨自守著充滿回憶的房子","小朋友最喜歡上中國武術課","科學家做出一個風車的模型","地上還長著許多紅色的草莓","今年新設計的海報很有創意","故事說出小鳥從小就很勇敢","他們給父母一份特別的驚喜"
-    
-    ]
-    
-    
-    public func messageBox(titlemessage: String){
+
+    public func messageBox(titlemessage: String, title: String, navi: Bool){
         let optionMenu = UIAlertController(title: titlemessage,message:"", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "返回", style: .cancel, handler: {
+        let okAction = UIAlertAction(title: title, style: .cancel, handler: {
             (alert: UIAlertAction!) -> Void in
-            self.performSegue(withIdentifier: "Test1", sender: self)
+            if(navi == true){
+                self.performSegue(withIdentifier: "Test1", sender: self)}
         })
         optionMenu.addAction(okAction)
         optionMenu.popoverPresentationController?.sourceView = self.textView
@@ -159,33 +146,34 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         self.startMenu.textFields?.last?.text = dateFormatter.string(from: sender.date)
     }
 
-    
-    // This delegate method is called every time the face recognition has detected something (including change)
-    func faceIsTracked(_ faceRect: CGRect, withOffsetWidth offsetWidth: Float, andOffsetHeight offsetHeight: Float, andDistance distance: Float) {
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0.1)
-        let layer: CALayer? = self.textView.layer
-        layer?.masksToBounds = false
-        //layer?.shadowOffset = CGSize(width: CGFloat(offsetWidth / 5.0), height: CGFloat(offsetHeight / 10.0))
-        layer?.shadowRadius = 0 //5
-        layer?.shadowOpacity = 0//0.1
-        CATransaction.commit()
-    }
-    // When the fluidUpdateInterval method is called, then this delegate method will be called on a regular interval
-    
-    func fluentUpdateDistance(_ distance: Float) {
-        
-        // Animate to the zoom level.
-        let effectiveScale: Float = distance / 60.0     //origin : 60
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(1.5)//origin: 0.1
-        self.textView.layer.setAffineTransform(CGAffineTransform(scaleX: CGFloat(effectiveScale), y: CGFloat(effectiveScale)))
-        CATransaction.commit()
-    }
-    
-    
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            /*
+             The callback may not be called on the main thread. Add an
+             operation to the main queue to update the record button's state.
+             */
+            OperationQueue.main.addOperation {
+                switch authStatus {
+                case .authorized:
+                    self.recordButton.isEnabled = true
+                    
+                case .denied:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("User denied access to speech recognition", for: .disabled)
+                    
+                case .restricted:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("Speech recognition restricted on this device", for: .disabled)
+                    
+                case .notDetermined:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("Speech recognition not yet authorized", for: .disabled)
+                }
+            }
+        }
         
         let attributedString = NSAttributedString(string: "個人信息", attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
@@ -227,20 +215,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             self.sextextField.inputView = self.sexpickView
             
         }
-        
-//        startMenu.addTextField {
-//            (textField: UITextField!) -> Void in
-//            self.agetextField = textField
-//            let heightConstraint = NSLayoutConstraint(item: self.agetextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-//            self.agetextField.addConstraint(heightConstraint)
-//            self.agetextField.placeholder = "輸入年齡"
-//            self.agetextField.font = UIFont.systemFont(ofSize: 30)
-//            self.agetextField.clearButtonMode = .whileEditing
-//            self.agetextField.inputView = self.agepickView
-//
-//
-//
-//        }
         
         startMenu.addTextField {
             (textField: UITextField!) -> Void in
@@ -301,7 +275,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 }
             
                 else{
-                    self.messageBox(titlemessage: "用戶信息不完整或用戶已存在")
+                    self.messageBox(titlemessage: "用戶信息不完整或用戶已存在", title: "返回", navi: true)
             }
           
             
@@ -328,15 +302,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         }
     
-    //随机选择一个chart测试
-    public func testContent() -> String{
-        let numCount = self.readingChart.count
-        let arrayKey = Int(arc4random_uniform(UInt32(numCount))) //random cases
-        //testCases.append(arrayKey)
-        let chooseContent = self.readingChart[arrayKey]
-        self.readingChart.remove(at: arrayKey)
-        return chooseContent
-    }
     
     //after countdown start test automatically
     public func countDown(){
@@ -352,62 +317,12 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             //prepare for test
             recordButton.isHidden = true
             self.textView.text = ""
-            
             recordButtonTapped()
-
         }
     }
     
-    //show training contents(start from num1)
-    public func contents(str : String, num : Int){
-        textView.isHidden = false
-        recordButton.isHidden = false
-        //distance didnot affect fontsize
-        //textView.font = UIFont.preferredFont(forTextStyle: .headline)
-        textView.font = .systemFont(ofSize: CGFloat(fontSize[num - 1] * 1.4))
-
-        //fixed 3 lines
-        var number = 0
-        var fixStr = [Character]()
-        for everyChar in str.characters{
-            if(number == 4 || number == 8 || number == 12){
-                fixStr.append("\n")
-                fixStr.append(everyChar)
-            }
-            else{
-                fixStr.append(everyChar)
-            }
-            number += 1
-        }
-        let str = String(fixStr)
-        textView.textContainer.maximumNumberOfLines = 4
-        self.textView.text = str
-        
-        
-        //var _ = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(hideContents), userInfo: nil, repeats: false)
-        
-    }
-    
-    
-    
-    public func hideContents(){
-        //textView.font = .systemFont(ofSize: 30)
-        //textView.text = "(   please repeat the contents......   )"
-        textView.isHidden = true
-        recordButton.isHidden = false
-    }
-    
-    
-
-    
-    public func showContents(times : Int){
-        testResults = testContent()
-        contents(str: testResults, num: times)
-    }
-    
-    
-    
-    public func stopTestUpdate(){
+  
+    public func updataDataBase(){
         
         
         //测试中需要记录的5个数据
@@ -492,45 +407,26 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let s14 = Expression<String>(s4)
             let s15 = Expression<Int>(s5)
             
-            
-            let update1 = selectedRow.update(
-                s11 <- self.timeSpent[number - 1]
-            )
+            let update1 = selectedRow.update(s11 <- self.timeSpent[number - 1])
             try! db.run(update1)
-            
-            let update2 = selectedRow.update(
-                s12 <- self.costTime[number - 1]
-            )
+            let update2 = selectedRow.update(s12 <- self.costTime[number - 1])
             try! db.run(update2)
-            
-            let update3 = selectedRow.update(
-                s13 <- self.selectedChart[number - 1]
-            )
+            let update3 = selectedRow.update(s13 <- self.selectedChart[number - 1])
             try! db.run(update3)
-            
-            let update4 = selectedRow.update(
-                s14 <- self.errorWord[number - 1]
+            let update4 = selectedRow.update(s14 <- self.errorWord[number - 1]
             )
             try! db.run(update4)
-            
-            let update5 = selectedRow.update(
-                s15 <- self.errorNum[number - 1]
-            )
+            let update5 = selectedRow.update(s15 <- self.errorNum[number - 1])
             try! db.run(update5)
-            
         }
     }
     
     public func stopTest(){
       
-        stopTestUpdate()
+        updataDataBase()
         
         //全部测试结束
-        if(self.mnread_num == 1){
-           self.messageBox(titlemessage: "全部測試結束")
-        }
-        
-        
+        if(self.mnread_num == 1){self.messageBox(titlemessage: "全部測試結束", title: "返回", navi: true)}
         else//准备另一个测试
         {
             self.mnread_num -= 1
@@ -538,10 +434,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let s1:String = "第" + String(self.mnread_case) + "次測試結束"
             let s2:String = "開始第" + String(self.mnread_case + 1) + "次測試"
         let optionMenu = UIAlertController(title: s1, message: inputResults, preferredStyle: .alert)
-//        let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
-//                NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
-//                ])
-//        optionMenu.setValue(attributedString, forKey: "continue")
         let okAction = UIAlertAction(title: s2, style: .cancel, handler: {
             (alert: UIAlertAction!) -> Void in
 
@@ -579,7 +471,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        //pickview
         agepickView.delegate = self
         sexpickView.delegate = self
         agepickView.dataSource = self
@@ -589,7 +480,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         agepickView.selectRow(45, inComponent:0, animated:true)
         sexpickView.selectRow(0, inComponent:0, animated:true)
         errpickView.selectRow(0, inComponent:0, animated:true)
+        speechRecognizer.delegate = self
         
+        // Initial readingChart
+        readingChart = ModelData.shared.readingChart
         
         // Disable the record buttons until authorization has been granted.
         recordButton.isHidden = true
@@ -621,45 +515,16 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         textView.backgroundColor = colors[backColor]
         distanceVary = distance[watchDistance]!
         
+        //蓝底时button颜色为白
+        if(colors[backColor] == fontblue){
+            recordButton.setTitleColor(UIColor.white, for: .normal)}
+        
         //language set
         var language : [String:String] = [ "廣東話": "zh-HK", "國語": "zh-TW",]
         speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language[testLanguage]!))!
         
         
     }
-    
-    
-    //detect accuracy, whether continue()
-    //any one words match -> pass
-    //return number of correct words and its contents
-    public func findAccuracy() -> (Int,String) {
-        //error words
-        var filterWords = ""
-        //testResults = selectedChart[myNumber]
-        //var correctChar = Int()
-        var re1Arr = Array<String>()//input words
-        var re2Arr = Array<String>()//test words
-        
-        //user say nothing -> equal to before
-        if(inputResults == ""){
-            return (0,"")
-        }
-        
-        for i in inputResults.characters{
-            re1Arr.append(String(i))
-        }
-        for i in testResults.characters{
-            re2Arr.append(String(i))
-        }
-        
-        let commonWords = re1Arr.filter(re2Arr.contains)
-        for a in re2Arr{
-            if(!commonWords.contains(a)){
-                filterWords += a
-            }
-        }
-        return (filterWords.count , filterWords)
-}
     
     private func startRecording() throws {
         
@@ -714,7 +579,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 isFinal = result.isFinal
 
             }
-
+            
             if error != nil || isFinal {
                 self.audioEngine.stop()
                 inputNode.removeTap(onBus: 0)
@@ -730,21 +595,18 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 
         })
         
+        
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
             self.recognitionRequest?.append(buffer)
         }
         
         audioEngine.prepare()
-        
         try audioEngine.start()
-        
-        //textView.font = .systemFont(ofSize: 30)
-        //textView.text = "(   Recording............   )"
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)     //单线程上锁
     }
 
     // MARK: SFSpeechRecognizerDelegate
-    
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
         if available {
             recordButton.isEnabled = true
@@ -756,26 +618,31 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     }
     
     
-    // MARK: Interface Builder actions
-    
     @IBAction func recordButtonTapped() {
-        if audioEngine.isRunning {
-            audioRecorder.stop()
-            audioEngine.stop()
-            recognitionRequest?.endAudio()
-            recordButton.isEnabled = false
-            recordButton.setTitle("Stopping", for: .disabled)
-            
-        } else {
-            
-            //start to record the time
-            self.showContents(times: testNumbers + 1)
-            try! startRecording()
-            recordButton.setTitle("停止錄音", for: [])
-            self.beforeTime = Date()
-
+        DispatchQueue.main.async {
+            if self.audioEngine.isRunning {
+                self.audioRecorder.stop()
+                self.audioEngine.stop()
+                self.recognitionRequest?.endAudio()
+                self.recordButton.isEnabled = false
+                self.recordButton.setTitle("Stopping", for: .disabled)
+                
+            } else {
+                
+                //start to record the time, filter tested case
+                self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
+                self.readingChart = self.readingChart.filter(){$0 != self.testResults}
+                do{
+                    self.semaphore.signal()  //保证录音单线程
+                    try self.startRecording()
+                    self.recordButton.setTitle("停止錄音", for: [])
+                    self.beforeTime = Date()
+                }
+                catch{print("cant start recorder. please")}
+            }
         }
     }
+
     
     func manualInsert(timeSpent : Double){
         let optionMenu = UIAlertController(title: "", message: "", preferredStyle: .alert)
@@ -828,12 +695,19 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             
         })
         
+        //错11,12个时停止
         let cancelAction = UIAlertAction(title: "停止測試", style: .default, handler: {
             (alert: UIAlertAction!) -> Void in
-    
             let login = (optionMenu.textFields?.first)! as UITextField
             self.recordButton.isHidden = true
-            self.errorNum[self.testNumbers] = Int(login.text!)!
+            let errorNum = Int(login.text!)!
+            self.errorNum[self.testNumbers] = errorNum
+            if(errorNum == 11){
+                self.timeSpent[self.testNumbers] = log10(Double(12 - errorNum) / timeSpent * 60)
+            }
+            if(errorNum == 12){
+                self.timeSpent[self.testNumbers] = 0
+            }
             self.stopTest()
         })
         
@@ -854,61 +728,39 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         //record the time interval(according to definition)
         let nowTime = Date()
         var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
-        let (errorWordsNum, filterWords) = findAccuracy()
-        
-        
+        let (errorWordsNum, filterWords) = findAccuracy(inputResults: inputResults, testResults: testResults)
         //--------------------------------------------------------------record for databse
-        
-        
-        //errorWord
         errorWord.append(filterWords)
-        
-        //erroNumber
         errorNum.append(errorWordsNum)
-        
-        //timecost
         costTime.append(timeSpent)
-        
-        //testContent
         selectedChart.append(testResults)
         
-        
-        //special case
-        if(timeSpent == 0){
-            self.timeSpent.append(timeSpent)
-        }
+        //if(timeSpent == 0){self.timeSpent.append(timeSpent)}
         
         if(errorWordsNum != 12 ){
             timeSpent = log10(Double(12 - errorWordsNum) / timeSpent * 60)
         }
-        else { timeSpent = 0}
+        else { //防止出现-INF
+            timeSpent = 0}
         
         self.timeSpent.append(timeSpent)
         textView.text = ""
         
-        //一次测试最多19项
-        if(self.testNumbers == 19){
-            stopTest()
-        }
-        
-        
         // 手动模式下输入错字，重新计算timespent
-        if(testMode == "手動"){
-                manualInsert(timeSpent: costTime[self.testNumbers])
-
-        }
-        
+        if(testMode == "手動"){manualInsert(timeSpent: costTime[self.testNumbers])}
         if(testMode == "自動"){
-            if(errorWordsNum < 12){
+            if(errorWordsNum < 11){
                 testNumbers += 1
                 recordButton.isHidden = true
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
             }
-            else{stopTest()}
+            else{
+                stopTest()
+            }
         }
-                
-        
+        //一次测试最多19项
+        if(self.testNumbers == 19){stopTest()}
     }
 }
 

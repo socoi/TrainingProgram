@@ -13,10 +13,11 @@ func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String,
     let semaphore = DispatchSemaphore(value: 0)
     var x = Array<Double>()
     var y = Array<Double>()
+    
     // xValue: min -> 1.5 , yVlaue: 0 -> value
     // 需要去除y 中可能有的0(如果19个测试都通过则没有)与相应的x
 
-    if y_value.contains(0){
+    if y_value.contains(0) && y_value.count > 1{
         x = Array(x_value[1...x_value.count - 1])
         y = Array(y_value[1...y_value.count - 1])
     if y.contains(0) || x.count != y.count{
@@ -59,7 +60,7 @@ func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String,
         do {
             if let json = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves) as? [String: String], let returnValue = json["curve_data"] {
                 print("output = \(returnValue)")
-                 //esult there
+                 //result there
                 //three values(delta1,2,3)
                 completionHandler(returnValue) //task句柄的返回
             }

@@ -57,6 +57,8 @@
 		639F34D51E53081500D0F47C /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F34D41E53081500D0F47C /* MainViewController.swift */; };
 		639F35451E53406300D0F47C /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		63BDE15521639A8800A4B74E /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BDE15421639A8800A4B74E /* ServerData.swift */; };
+		63BDE15A2168659A00A4B74E /* TestFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BDE1592168659A00A4B74E /* TestFunc.swift */; };
+		63BDE15C21687E5000A4B74E /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BDE15B21687E5000A4B74E /* Data.swift */; };
 		63C78B0C1E5351C500479725 /* PNBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B011E5351C500479725 /* PNBar.swift */; };
 		63C78B0D1E5351C500479725 /* PNBarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B021E5351C500479725 /* PNBarChart.swift */; };
 		63C78B0E1E5351C500479725 /* PNChartLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C78B031E5351C500479725 /* PNChartLabel.swift */; };
@@ -141,6 +143,8 @@
 		639F35491E53410200D0F47C /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCharts.framework; path = "/Users/macuser/Downloads/So program/TrainingProgram/SwiftCharts.framework"; sourceTree = "<absolute>"; };
 		63A7E72E1F5058AA001B475A /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftCharts.framework; sourceTree = "<group>"; };
 		63BDE15421639A8800A4B74E /* ServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerData.swift; sourceTree = "<group>"; };
+		63BDE1592168659A00A4B74E /* TestFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFunc.swift; sourceTree = "<group>"; };
+		63BDE15B21687E5000A4B74E /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		63C78B011E5351C500479725 /* PNBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBar.swift; path = chart/PNBar.swift; sourceTree = "<group>"; };
 		63C78B021E5351C500479725 /* PNBarChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNBarChart.swift; path = chart/PNBarChart.swift; sourceTree = "<group>"; };
 		63C78B031E5351C500479725 /* PNChartLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PNChartLabel.swift; path = chart/PNChartLabel.swift; sourceTree = "<group>"; };
@@ -284,6 +288,16 @@
 			name = Extension;
 			sourceTree = "<group>";
 		};
+		63BDE156216858D200A4B74E /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				63BDE15421639A8800A4B74E /* ServerData.swift */,
+				63BDE1592168659A00A4B74E /* TestFunc.swift */,
+				63BDE15B21687E5000A4B74E /* Data.swift */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		63C78B001E5351A900479725 /* SwiftChart */ = {
 			isa = PBXGroup;
 			children = (
@@ -309,6 +323,7 @@
 				639F34741E518AAC00D0F47C /* LaunchScreen.storyboard */,
 				639F34751E518AAC00D0F47C /* Main.storyboard */,
 				B56B3B031CEB85E1001766E2 /* README.md */,
+				63BDE156216858D200A4B74E /* utils */,
 				639F342C1E51634900D0F47C /* Frameworks */,
 				639F34411E51652300D0F47C /* OCFile */,
 				7539A46F1CE7A57600505E8B /* TrainingProgram */,
@@ -344,7 +359,6 @@
 				639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */,
 				639F34C81E52D76D00D0F47C /* SubContentsViewController.storyboard */,
 				639F34D41E53081500D0F47C /* MainViewController.swift */,
-				63BDE15421639A8800A4B74E /* ServerData.swift */,
 			);
 			name = TrainingProgram;
 			path = SpeakToMe;
@@ -482,6 +496,7 @@
 			files = (
 				6324A87B1E8A15FC00EC65F2 /* SwiftViewController.swift in Sources */,
 				639F34A61E52D15A00D0F47C /* UIView.swift in Sources */,
+				63BDE15A2168659A00A4B74E /* TestFunc.swift in Sources */,
 				639F34B71E52D2DF00D0F47C /* RightViewController.swift in Sources */,
 				639F34B61E52D2DF00D0F47C /* NonMenuController.swift in Sources */,
 				639F34B81E52D2DF00D0F47C /* SubContentsViewController.swift in Sources */,
@@ -491,6 +506,7 @@
 				639F34BB1E52D32D00D0F47C /* LeftViewController.swift in Sources */,
 				639F34A91E52D19C00D0F47C /* ImageHeaderView.swift in Sources */,
 				63C928AA20444C5200FF3DDC /* Cells.swift in Sources */,
+				63BDE15C21687E5000A4B74E /* Data.swift in Sources */,
 				639F34511E517DE700D0F47C /* AppDelegate.swift in Sources */,
 				63C78B131E5351C500479725 /* PNLineChartDataItem.swift in Sources */,
 				63C78B121E5351C500479725 /* PNLineChartData.swift in Sources */,

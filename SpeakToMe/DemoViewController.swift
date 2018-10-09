@@ -83,7 +83,30 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
     }
     
     public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(false)
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            /*
+             The callback may not be called on the main thread. Add an
+             operation to the main queue to update the record button's state.
+             */
+            OperationQueue.main.addOperation {
+                switch authStatus {
+                case .authorized:
+                    self.recordButton.isEnabled = true
+                    
+                case .denied:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("User denied access to speech recognition", for: .disabled)
+                    
+                case .restricted:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("Speech recognition restricted on this device", for: .disabled)
+                    
+                case .notDetermined:
+                    self.recordButton.isEnabled = false
+                    self.recordButton.setTitle("Speech recognition not yet authorized", for: .disabled)
+                }
+            }
+        }
     }
     
 //    public override func viewWillDisappear(_ animated: Bool) {
@@ -360,21 +383,21 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
     // MARK: Interface Builder actions
     
     @IBAction func recordButtonTapped() {
-        if audioEngine.isRunning {
-            audioEngine.stop()
-            recognitionRequest?.endAudio()
-            recordButton.isEnabled = false
-            recordButton.setTitle("Stopping", for: .disabled)
-            
-        } else {
-            
-            //start to record the time
-            self.showContents(times: testNumbers + 1)
-            try! startRecording()
-            recordButton.setTitle("停止錄音", for: [])
-            self.beforeTime = Date()
-            
-        }
+            if self.audioEngine.isRunning {
+                self.audioEngine.stop()
+                self.recognitionRequest?.endAudio()
+                self.recordButton.isEnabled = false
+                self.recordButton.setTitle("Stopping", for: .disabled)
+                
+            } else {
+                
+                //start to record the time
+                self.showContents(times: self.testNumbers + 1)
+                try! self.startRecording()
+                self.recordButton.setTitle("停止錄音", for: [])
+                self.beforeTime = Date()
+                
+            }
     }
     
     func manualInsert(timeSpent : Double){

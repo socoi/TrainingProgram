@@ -12,6 +12,8 @@ import SpreadsheetView
 class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, SpreadsheetViewDelegate  {
     
     let fullScreenSize = UIScreen.main.bounds.size
+    public var songPlayer = AVAudioPlayer()
+
     
     //read from database
     public var yLabel = [Double]()
@@ -42,9 +44,9 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
     public var testMode = String()
     
     public var path = String()
-    public var songPlayer = AVAudioPlayer()
     public var curve_data = String()
     public let semaphore = DispatchSemaphore(value: 0)
+    public let play_sound = DispatchSemaphore(value: 1)
     public var delta1 = Double()
     public var delta2 = Double()
     public var delta3 = Double()
@@ -155,14 +157,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
             cell.label.sizeToFit()
             return cell}
-//        if case (8, 0) = (indexPath.column, indexPath.row) {
-//            let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
-//            cell.label.textColor = UIColor.blue
-//            cell.label.text = "年齡: " + String(userAge)
-//            cell.label.font = UIFont(name: "System - System", size: CGFloat(25))
-//            cell.label.sizeToFit()
-//
-//            return cell}
+
         if case (8, 0) = (indexPath.column, indexPath.row) {
             let cell = spreadsheetView.dequeueReusableCell(withReuseIdentifier: String(describing: DateCell.self), for: indexPath) as! DateCell
             cell.label.textColor = UIColor.blue
@@ -318,59 +313,25 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         let fileName = self.userID + "_" + self.userName + "_test" + String(self.testCase) + "_" + String(row) + ".m4a"
         let audioFileName = path + "/" + fileName
         
+        self.play_sound.signal()
         do{
+        
+        try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)
         songPlayer = try AVAudioPlayer(contentsOf: URL(string: audioFileName)!)
+        
         if(songPlayer.isPlaying){
             songPlayer.stop()}
-        songPlayer.prepareToPlay()
+            songPlayer.prepareToPlay()
             songPlayer.play()
-            
+            _ = play_sound.wait(timeout: DispatchTime.distantFuture)
         }
-        
+
         catch{
             print("failture")
         }
         
         
     }
-    
-
-    //------------------------------------------------------------------------------------------------
-    
-    func average(_ input: [Double]) -> Double {
-        return input.reduce(0, +) / Double(input.count)
-    }
-    
-    func multiply(_ a: [Double], _ b: [Double]) -> [Double] {
-        return zip(a,b).map(*)
-    }
-    
-    func linearRegression(_ xs: [Double], _ ys: [Double]) -> Double {
-        let lsx = Array(xs.prefix(xs.count - midIndex))
-        let lsy = Array(ys.prefix(ys.count - midIndex))
-        let sum1 = average(multiply(lsx, lsy)) - average(lsx) * average(lsy)
-        let sum2 = average(multiply(lsx, lsx)) - pow(average(lsx), 2)
-        let slope = sum1 / sum2
-        let intercept = average(lsy) - slope * average(lsx)
-        let x = (theta - intercept) / slope
-        return x
-    }
-    
-    
-    //two stright lines intersection, find optimal(theshold 0.4) not reversed yet
-    //get thate and optimal index point
-    func findTheta(_ xs : [Double]) -> (Double , Int){
-        if(xs.count > 2){
-        for i in 0...xs.count - 3{
-            if(xs[i] - xs[i + 1] > 0.4 && xs[i + 1] > xs[i + 2]){
-                let resultArray : [Double] = Array(xs.prefix(i))
-                return (average(resultArray) , i)
-            }
-        }
-    }
-        return (0.0 , 0)
-    }
-    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(false)
@@ -409,13 +370,6 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         
         //logmar计算. 40cm从1.5开始, 13cm从2.0开始. -0.1递减
         for i in 1...19{
-//            if(i < 5){
-//            let s = String(format: "%1.2f", Double(i) * 0.1 - 0.4 )
-//            let t = ((Double(i) * 0.1 - 0.4) * 100).rounded() / 100
-//            xValueLabel.append(t)
-//            xLabel.append(s)
-//            }
-//            let value = Double(i + Int(distanceVary) - 5) * 0.1
             let value = -0.5 + Double((Int(distanceVary) + i)) * 0.1
             let s = String(format: "%1.2f", value)
             let t = (value * 100).rounded() / 100
@@ -430,24 +384,9 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
 
         
         lineChart.showCoordinateAxis = true
-        
-        //lineChart.center = self.view.center
-        //lineChart.center = mnreadChart.
-        
-        //delete untested pass
-        //yLabel = yLabel.filter{ $0 != 0 }
-        // since x-axis start from -0.3 , need reverse
-        //yLabel = [log10(136.0),log10(151), log10(150), log10(196), log10(152) , log10(196) ,log10(132) ,log10(199) ,log10(116) ,log10(178) ,log10(163) ,log10(172) ,log10(76) ,log10(17) ,0 , 0 , 0 , 0 , 0]
-        
-        //yLabel = [1.99,2.0, 2.0, 2.11, 2.07, 2.09 ,2.08 ,1.96 ,1.43 ,1.22,1.54 ,1.17,1.14 ,1.38 ,1 , 0 , 0 , 0 , 0]
-        (theta,midIndex) = findTheta(yLabel)
         yLabel = yLabel.reversed()
         
-
-        
         let dataArr = yLabel
-        //let dataRegression = regressionLabel
-        
         let data = PNLineChartData()
         data.color = PNDeepGreen
         data.itemCount = dataArr.count
@@ -459,10 +398,6 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             return item
         })
         
-        //startIndex, if all test pass start from 0
-        //var startIndex = yLabel.count - (yLabel.filter{$0 != 0.0}).count - 1
-        //if(startIndex == -1){ startIndex = 0}
-        //regressionIndex.append(Double(startIndex))
         
         yLabel = yLabel.filter{$0 != 0.0}
         xLabel = xLabel.reversed()
@@ -492,13 +427,30 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
                 print("did not get number, please return")
             }
             })
-    
+ 
+        //lineChart.center = self.view.center
+        //lineChart.center = mnreadChart.
+        
+        //delete untested pass
+        //yLabel = yLabel.filter{ $0 != 0 }
+        // since x-axis start from -0.3 , need reverse
+        //yLabel = [log10(136.0),log10(151), log10(150), log10(196), log10(152) , log10(196) ,log10(132) ,log10(199) ,log10(116) ,log10(178) ,log10(163) ,log10(172) ,log10(76) ,log10(17) ,0 , 0 , 0 , 0 , 0]
+        
+        //yLabel = [1.99,2.0, 2.0, 2.11, 2.07, 2.09 ,2.08 ,1.96 ,1.43 ,1.22,1.54 ,1.17,1.14 ,1.38 ,1 , 0 , 0 , 0 , 0]
+        
+        //yLabel = [2.21, 2.23, 2.37, 2.19, 2.23, 2.34, 2.17, 1.52, 0.66, 1.50,0,0,0,0,0,0,0,0,0]
 //            //////////// 原始计算curve_fitting的方法（错误的) //////////////
 //            //交点x的准确坐标
 //            let resultX = self.self.linearRegression(self.xValue, self.yLabel)
 //            self.regressionIndex.append(resultX)
 //            self.regressionIndex.append(self.theta)
 //            self.regressionIndex.append(self.distanceVary)
+        
+              //test
+//              self.delta1 = 2.2525
+//              self.delta2 = 1.1365
+//              self.delta3 = 1.2000
+//              self.distanceVary = 1
         
               self.regressionIndex.append(delta3)
               self.regressionIndex.append(delta1)

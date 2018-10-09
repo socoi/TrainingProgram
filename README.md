@@ -54,11 +54,22 @@ v1.4
 
 v1.41
 1.  服务器curve_fit，计算结果后返回, 修正回归曲线， UI的一些改变
-v1.42 待解决
-2. 修正yvalue可能为-inf的情况
-3. 闪退的问题
-4. 播放没有声音的问题
 
+v1.42
+
+1. yvalue可能为-inf的情况(errorNum = 12仍记录? ), 可能直接跳过一个测试到另外个测试
+(  可能问题 speechRecognizer.delegate 和 SFSpeechRecognizer.requestAuthorization 见官方文档)
+2. 修正播放没有声音的问题（设置AVAudioSessionCategoryOptions.mixWithOthers）
+3. log应该是10为底计算
+4. 手动情况下最后一个没通过的测试仍放入计算
+5. speechrecognition, code=203问题(disable OS_ACTIVITY_MODE)
+
+v1.43
+1.蓝色背景，曲线
+2.输入错字时判断（停止时输入11和12才有效吧) 叠选择
+3.全部测试通过时曲线是否有问题
+4.同一天放在同一个folder
+5y.值antilog
                     
 
 

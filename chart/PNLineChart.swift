@@ -241,6 +241,7 @@ class PNLineChart: UIView{
     func strokeChart(_ controlIndex : [Double]) {
         let chartPaths = NSMutableArray()
         let pointPaths = NSMutableArray()
+        var startIndex = Int()
         
         var text : [String] = ["","","","","","","","","","","","","","","","","","",""]
         var textPoint : [String] = ["" , ""]
@@ -282,10 +283,25 @@ class PNLineChart: UIView{
             let inflexionWidth = chartData.inflexionPointWidth
             
             
-            //case1 : 19 testing points
+            for index in 0..<chartData.itemCount - 1{
+                if(CGFloat(chartData.getData(index).y) == 0 && CGFloat(chartData.getData(index+1).y) != 0 ){
+                    startIndex = index
+                    break
+                }
+                else{
+                    //全部测试通过
+                    startIndex = 0
+                }
+            }
+            
+            //case1 : test cases total 19
             if(lineIndex == 0){
             for index in 0..<chartData.itemCount {
                 yValue = CGFloat(chartData.getData(index).y)
+                
+                if(index < startIndex){
+                    continue
+                }
                 
                 if(yValueMax - yValueMin == 0){
                     innerGrade = (yValue - yValueMin) / (yValueMax - yValueMin + 1)}
@@ -313,7 +329,7 @@ class PNLineChart: UIView{
                     self.addSubview(textLabel)
                     
                     
-                    if index != 0 {
+                    if index != startIndex {
                         // Calculate the point for line
                         
                         let distance = CGFloat(sqrt(pow(Double(x - lastX), 2.0) + pow(Double(y - lastY), 2.0)))
@@ -329,7 +345,7 @@ class PNLineChart: UIView{
                     lastY = y
                     
                 default:
-                    if index != 0 {
+                    if index != startIndex {
                         progressLine.addLine(to: CGPoint(x: x, y: y))
                     }
                     
@@ -382,10 +398,10 @@ class PNLineChart: UIView{
                     pointPath.close()
                     
                     if(index == 1){
-                    let textLabel = UITextView(frame : CGRect(x: x - inflexionWidth/2.0 - 40, y: y - inflexionWidth/2.0 - 65, width: 80, height: 40))
+                    let textLabel = UITextView(frame : CGRect(x: x - inflexionWidth/2.0 - 40, y: y - inflexionWidth/2.0 - 85, width: 90, height: 40))
                         
                     textPoint[0] = String(format: "%.3f",Double(controlIndex[0]))
-                    textPoint[1] = String(format: "%.3f",Double(pow(M_E, controlIndex[1])))
+                    textPoint[1] = String(format: "%.3f",Double(pow(10, controlIndex[1])))
                         textLabel.text = "CPS: " + textPoint[0] + "\n" + "MRS: " + textPoint[1] + "\n"
                         self.addSubview(textLabel)}
                     
