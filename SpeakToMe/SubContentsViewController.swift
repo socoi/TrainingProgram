@@ -376,12 +376,12 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             xValueLabel.append(t)
             xLabel.append(s)
         }
-    
-        lineChart.yLabelFormat = "%1.2f"
+        
+        //chartData(PNLineChart.swift)有改 y轴0-4 margin: 0.5
+        lineChart.yLabelFormat = "%1.1f"
         lineChart.showLabel = true
         lineChart.backgroundColor = UIColor.clear
         lineChart.xLabels = xLabel as NSArray
-
         
         lineChart.showCoordinateAxis = true
         yLabel = yLabel.reversed()
@@ -394,8 +394,7 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         data.getData = ({
             (index: Int) -> PNLineChartDataItem in
             let yValue = CGFloat(dataArr[index])
-            let item = PNLineChartDataItem(y: yValue)
-            return item
+            return PNLineChartDataItem(y: yValue)
         })
         
         
@@ -472,16 +471,10 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             regressionData.getData = ({
                 (index: Int) -> PNLineChartDataItem in
                 let yValue = CGFloat(self.regressionLabel[index])
-                let item = PNLineChartDataItem(y: yValue)
-                return item
+                return PNLineChartDataItem(y: yValue)
             })
         
-            if (self.theta,self.midIndex) != (0.0 ,0){
-                lineChart.chartData = [data, regressionData]}
-                //lineChart.chartData = [data]}
-            else {
-                lineChart.chartData = [data, regressionData]
-            }
+            lineChart.chartData = [data, regressionData]
             lineChart.strokeChart(self.regressionIndex)
             
             ////para：1. start from which index 2. scope

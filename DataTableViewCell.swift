@@ -34,7 +34,13 @@ class DataTableViewCell : BaseTableViewCell {
     
     override func setData(_ data: Any?) {
         if let data = data as? DataTableViewCellData {
-            self.dataImage.setRandomDownloadImage(width: 80, height: 80, type: "data")
+            if(data.imageUrl == "folder"){
+            self.dataImage.setRandomDownloadImage(width: 80, height: 80, type: "folder")
+            }
+            if(data.imageUrl == "user"){
+                self.dataImage.setRandomDownloadImage(width: 80, height: 80, type: "user")
+            }
+            
             self.dataText.text = data.text
         }
     }

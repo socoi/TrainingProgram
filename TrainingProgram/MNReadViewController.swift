@@ -52,7 +52,7 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         self.testNumber.delegate = self
         self.testNumber.dataSource = self
         
-        testLanguage.selectRow(1, inComponent: 0, animated: false)
+        testLanguage.selectRow(0, inComponent: 0, animated: false)
         testMode.selectRow(1, inComponent: 0, animated: false)
 
         

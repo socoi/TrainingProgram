@@ -416,7 +416,7 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
             let heightConstraint = NSLayoutConstraint(item: self.errtextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
             self.errtextField.addConstraint(heightConstraint)
             self.errtextField.font = UIFont.systemFont(ofSize: 30)
-            self.errtextField.placeholder = "請輸入错字数"
+            self.errtextField.placeholder = "错字数"
             self.errtextField.clearButtonMode = .whileEditing
             self.errtextField.text! = "0"
             self.errtextField.inputView = self.errpickView
@@ -425,28 +425,37 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
         
         let okAction = UIAlertAction(title: "確認", style: .default, handler: {
             (alert: UIAlertAction!) -> Void in
-            
+
             let login = (optionMenu.textFields?.first)! as UITextField
-                self.testNumbers += 1
-                if(self.testNumbers == 2 ){
+            if (login.text != ""){
+                let error = Int(login.text!)
+                self.recordButton.isHidden = true
+                self.errorWord[self.testNumbers] = ""  //手动情况不记录测试错字
+                self.errorNum[self.testNumbers] = error! //手动计入错字数
+                
+                
+                if(error! < 11){
+                    self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60)
+                    //prepare for the test
+                    if(self.testNumbers != 1){
+                    self.testNumbers += 1
+                    self.countDownNumber = 4
+                    self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                    }
+                    else{self.stopTest()}
+                }
+                
+                if(error! == 11){
+                    self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60)
                     self.stopTest()
                 }
-                else{
-                self.recordButton.isHidden = true
-                self.countDownNumber = 4
-                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                
+                if(error! == 12){
+                    self.timeSpent[self.testNumbers] = 0
+                    self.stopTest()
                 }
-            
-        })
-        
-        let cancelAction = UIAlertAction(title: "停止測試", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            
-            let login = (optionMenu.textFields?.first)! as UITextField
-            self.recordButton.isHidden = true
-            self.errorNum[self.testNumbers] = Int(login.text!)!
-            self.stopTest()
-        })
+                
+            }})
         
         optionMenu.popoverPresentationController?.sourceView = textView
         let t1 = fullScreenSize.height
@@ -455,7 +464,6 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
         optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:20,height:20)
         optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
         optionMenu.addAction(okAction)
-        optionMenu.addAction(cancelAction)
         self.present(optionMenu, animated: true, completion: nil)
     }
     
@@ -500,21 +508,5 @@ public class DemoViewController: UIViewController, SFSpeechRecognizerDelegate, U
         if(self.testNumbers < 2){
             manualInsert(timeSpent: costTime[self.testNumbers])
         }
-            else{
-            stopTest()
-        }
-        
-//        if(testMode == "自動"){
-//            if(correctWords > 1){
-//                testNumbers += 1
-//                recordButton.isHidden = true
-//                self.countDownNumber = 4
-//                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-//            }
-            
-//            else{
-//                stopTest()
-//            }}
-        
     }
 }

@@ -59,7 +59,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var distanceVary = Double() //  pass to resultView controller
     public var testLanguage = String() //普通话或者粤语
     public var testMode = String()  //自动或手动
-
+    
     
     let startMenu = UIAlertController(title:"" , message: "", preferredStyle: .alert) //初始对话框，需要输入用户信息
     //选择框里的内容设计
@@ -528,17 +528,26 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     private func startRecording() throws {
         
+        //----------------------------------------------------录音准备 /////////////
+        
         self.inputResults = ""
         let fileName = self.userId + "_" + self.userName + "_test" + String(self.mnread_case + 1) + "_" + String(testNumbers + 1) + ".m4a"
         let audioFilename = paths.appendingPathComponent(fileName)
-
+        
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000,
             AVNumberOfChannelsKey: 1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
-
+        
+        audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+        audioRecorder.delegate = self
+        audioRecorder.record()
+        
+        //-------------------------------------------------------------------------
+        
+        
         // Cancel the previous task if it's running.
         if let recognitionTask = recognitionTask {
             recognitionTask.cancel()
@@ -549,11 +558,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         try audioSession.setCategory(AVAudioSessionCategoryRecord)
         try audioSession.setMode(AVAudioSessionModeMeasurement)
         try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
-        
-        //开始录音
-        audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
-        audioRecorder.delegate = self
-        audioRecorder.record()
         
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         			
@@ -567,17 +571,15 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         // We keep a reference to the task so that it can be cancelled.
         //recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest, resultHandler:{ (result, error) in
-            var isFinal = false
-        
+        var isFinal = false
             
         //user say nothing
             self.inputResults = ""
             
-            if let result = result {
+            if let result = result{
                 //here is the result
                 self.inputResults = result.bestTranscription.formattedString
                 isFinal = result.isFinal
-
             }
             
             if error != nil || isFinal {
@@ -590,9 +592,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.recordButton.isEnabled = true
                 self.recordButton.setTitle("開始錄音", for: [])
             }
-            
-            self.stopRecord()
-
+           self.stopRecord()
         })
         
         
@@ -603,9 +603,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         audioEngine.prepare()
         try audioEngine.start()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)     //单线程上锁
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
     }
-
+    
+    
     // MARK: SFSpeechRecognizerDelegate
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
         if available {
@@ -660,7 +661,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             let heightConstraint = NSLayoutConstraint(item: self.errtextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
             self.errtextField.addConstraint(heightConstraint)
             self.errtextField.font = UIFont.systemFont(ofSize: 30)
-            self.errtextField.placeholder = "請輸入错字数"
+            self.errtextField.placeholder = "错字数"
             self.errtextField.clearButtonMode = .whileEditing
             self.errtextField.text! = "0"
             self.errtextField.inputView = self.errpickView
@@ -671,45 +672,34 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             (alert: UIAlertAction!) -> Void in
             
             let login = (optionMenu.textFields?.first)! as UITextField
-            
             if (login.text != ""){
-                let error = Int(login.text!)
+                let error = Int(login.text!)!
                 self.recordButton.isHidden = true
                 self.errorWord[self.testNumbers] = ""  //手动情况不记录测试错字
-                self.errorNum[self.testNumbers] = error! //手动计入错字数
-                self.timeSpent[self.testNumbers] = log10(Double(12 - error!) / timeSpent * 60) //重新计算timeSpent
+                self.errorNum[self.testNumbers] = error //手动计入错字数
+
                 
-                //prepare for the test
-                if(self.testNumbers<18){
+                if(error < 11){
+                self.timeSpent[self.testNumbers] = log10(Double(12 - error) / timeSpent * 60)
+                //总共19个测试
+                if(self.testNumbers != 18){
                 self.testNumbers += 1
                 self.countDownNumber = 4
-                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)}
+                    else{self.stopTest()}
                 }
                 
-                else{
-                    self.recordButton.isHidden = true
+                if(error == 11){
+                    self.timeSpent[self.testNumbers] = log10(Double(12 - error) / timeSpent * 60)
                     self.stopTest()
                 }
-
-            }
+                
+                if(error == 12){
+                    self.timeSpent[self.testNumbers] = 0
+                    self.stopTest()
+                }
             
-        })
-        
-        //错11,12个时停止
-        let cancelAction = UIAlertAction(title: "停止測試", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            let login = (optionMenu.textFields?.first)! as UITextField
-            self.recordButton.isHidden = true
-            let errorNum = Int(login.text!)!
-            self.errorNum[self.testNumbers] = errorNum
-            if(errorNum == 11){
-                self.timeSpent[self.testNumbers] = log10(Double(12 - errorNum) / timeSpent * 60)
-            }
-            if(errorNum == 12){
-                self.timeSpent[self.testNumbers] = 0
-            }
-            self.stopTest()
-        })
+            }})
         
         optionMenu.popoverPresentationController?.sourceView = textView
         let t1 = fullScreenSize.height
@@ -718,7 +708,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         optionMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:20,height:20)
         optionMenu.popoverPresentationController?.permittedArrowDirections = [.up]
         optionMenu.addAction(okAction)
-        optionMenu.addAction(cancelAction)
         self.present(optionMenu, animated: true, completion: nil)
     }
     
@@ -746,21 +735,24 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         self.timeSpent.append(timeSpent)
         textView.text = ""
         
+        
         // 手动模式下输入错字，重新计算timespent
         if(testMode == "手動"){manualInsert(timeSpent: costTime[self.testNumbers])}
         if(testMode == "自動"){
             if(errorWordsNum < 11){
+                if(testNumbers != 18){ //19个测试
                 testNumbers += 1
                 recordButton.isHidden = true
                 self.countDownNumber = 4
                 self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+                }
+            else{stopTest()}
             }
             else{
                 stopTest()
             }
         }
-        //一次测试最多19项
-        if(self.testNumbers == 19){stopTest()}
+    
     }
 }
 

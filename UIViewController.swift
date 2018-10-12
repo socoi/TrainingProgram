@@ -22,7 +22,7 @@ extension UIViewController {
     func returnPrevious(){
         self.addLeftBarButtonWithImage(UIImage(named: "ic_menu_black_24dp")!)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "userResultViewController") as! userResultViewController
+        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "User_First") as! User_First
         self.navigationController?.pushViewController(subContentsVC, animated: true)
     }
     

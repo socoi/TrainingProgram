@@ -6,15 +6,21 @@
 //  Copyright © 2017 Zhao Ruohan. All rights reserved.
 //
 
+//navigation: ResultViewController -> idViewController -> userResultViewController
+//只显示各种日期的信息
+
+
+
 import UIKit
 import SQLite
 
-class ResultViewController: UIViewController {
+class User_Third: UIViewController {
     
     
     @IBOutlet weak var tableView: UITableView!
     public var userID = String()
     public var mainContens = [String]()
+    public var time = String()
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -46,11 +52,12 @@ class ResultViewController: UIViewController {
         let details  = Expression<String>("details")
         let userid = Expression<String>("userid")
         
-        //只显示对应用户id的信息
         let t = testResults.filter(userid == self.userID)
         for user in try! db.prepare(t){
             self.mainContens.append(user[details])
         }
+        
+        self.mainContens = Array(Set(self.mainContens)) //filter重复的
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         }
@@ -62,7 +69,7 @@ class ResultViewController: UIViewController {
 }
 
 
-extension ResultViewController : UITableViewDelegate {
+extension User_Third : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return DataTableViewCell.height()
     }
@@ -341,20 +348,20 @@ extension ResultViewController : UITableViewDelegate {
     }
 }
 
-extension ResultViewController : UITableViewDataSource {
+extension User_Third : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.mainContens.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: DataTableViewCell.identifier) as! DataTableViewCell
-        let data = DataTableViewCellData(imageUrl: "dummy", text: mainContens[indexPath.row])
+        let data = DataTableViewCellData(imageUrl: "user", text: mainContens[indexPath.row])
         cell.setData(data)
         return cell
     }
 }
 
-extension ResultViewController : SlideMenuControllerDelegate {
+extension User_Third : SlideMenuControllerDelegate {
     
     func leftWillOpen() {
         //self.returnPrevious()

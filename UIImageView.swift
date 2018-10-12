@@ -24,6 +24,8 @@ extension UIImageView {
         case "background":
             url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/polyu.png")!
             self.alpha = 0.2
+        case "folder" :
+            url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/folder.png")!
         default:
             url = URL(string: "http://smart-healthcare.comp.polyu.edu.hk/img/user.png")!
         }

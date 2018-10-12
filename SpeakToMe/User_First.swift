@@ -1,21 +1,20 @@
 //
-//  UserSubConetntsViewController.swift
+//  User_First.swift
 //  TrainingProgram
 //
 //  Created by MAC User on 24/3/2018.
 //  Copyright © 2018 Zhao Ruohan. All rights reserved.
 //
 
-
 import UIKit
 import SQLite
 
-class userResultViewController: UIViewController {
+class User_First: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    public var newUser = String()
     public var mainContens = [String]()
+    public var testTime = [String]()
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -41,6 +40,7 @@ class userResultViewController: UIViewController {
         //self.setNavigationBarItem()  //不显示删除信息
         
         self.mainContens = []
+        self.testTime = []
         
         //list database all rows
         let path = NSSearchPathForDirectoriesInDomains(
@@ -50,10 +50,12 @@ class userResultViewController: UIViewController {
         //列出 userid 根目录
         let db = try! Connection("\(path)/db.sqlite3")
         let testResults = Table("testResults")
-        let userid  = Expression<String>("userid")
-
+        let testTime  = Expression<String>("testTime")
+        
         for user in try! db.prepare(testResults){
-            self.mainContens.append(user[userid])
+            let t = user[testTime].components(separatedBy: ",") //格式是日期 + 当天时间
+            self.mainContens.append(t[0])                       //只需显示日期
+            self.testTime.append(user[testTime])
         }
         self.mainContens = Array(Set(self.mainContens)) //filter重复的
         self.tableView.reloadData()
@@ -68,70 +70,14 @@ class userResultViewController: UIViewController {
 }
 
 
-extension userResultViewController : UITableViewDelegate {
+extension User_First : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return DataTableViewCell.height()
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return YES if you want the specified item to be editable.
-        return true
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if(editingStyle == UITableViewCellEditingStyle.delete) {
-            
-            //when you hit delete( base on contents delete)
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true
-                ).first!
-            let db = try! Connection("\(path)/db.sqlite3")
-            let testResults = Table("testResults")
-            let userid  = Expression<String>("userid")
-            var id = String()
-
-
-            
-            let currentCell = tableView.cellForRow(at: indexPath)! as! DataTableViewCell
-            let currentText = currentCell.dataText?.text!
-            let t = testResults.filter(userid == currentText!)
-            
-            for user in try! db.prepare(t) {
-                id = user[userid]
-            }
-            
-            try! db.run(t.delete())
-            
-            //            let sqliteSequence = Table("sqlite_sequence")
-            //            try! db.run(sqliteSequence.delete())
-            
-            //删除录音记录
-            let fileMgr = FileManager()
-            let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-            if let directoryContents = try? fileMgr.contentsOfDirectory(atPath: dirPath)
-            {
-                for path in directoryContents
-                {
-                    let fullPath = (dirPath as NSString).appendingPathComponent(path)
-                    do
-                    {
-                        if(path.prefix(id.count) == id){
-                        try fileMgr.removeItem(atPath: fullPath)
-                            print("Files deleted")}
-                    }
-                    catch let error as NSError
-                    {
-                        print("Error deleting: \(error.localizedDescription)")
-                    }
-                }
-            }
-            
-            //refresh the page
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "userResultViewController") as! userResultViewController
-            self.navigationController?.pushViewController(vc, animated: false)
-            
-         
-        }
+        return false
     }
     
     
@@ -144,50 +90,38 @@ extension userResultViewController : UITableViewDelegate {
         
         let db = try! Connection("\(path)/db.sqlite3")
         let testResults = Table("testResults")
-        let userid  = Expression<String>("userid")
-
-        
-        //        //test
-        //        print(self.mainContens)
-        //        let seq       = Expression<Int>("id")
-        //        for user in try! db.prepare(testResults){
-        //            print(user[seq])
-        //        }
+        let testTime  = Expression<String>("testTime")
         
         
         //choose base on contents(now row)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
-        
-        //ableView.registerCellNib(DataTableViewCell.self)
-        //tableView.reloadData()
-        
+        let user_second = storyboard.instantiateViewController(withIdentifier: "User_Second") as! User_Second
         let currentCell = tableView.cellForRow(at: indexPath)! as! DataTableViewCell
-        let currentText = currentCell.dataText?.text!
+        let currentText = (currentCell.dataText?.text!)! + "%"
         
-        let t = testResults.filter(userid == currentText!)
+        let t = testResults.filter(testTime.like(currentText)) //like
         for user in try! db.prepare(t){
-        //跳转到相应用户id的子目录
-        subContentsVC.userID = user[userid]
+            //跳转到相应用户id的子目录
+            user_second.testTime = (currentCell.dataText?.text!)! //只有当天日期
         }
-        self.navigationController?.pushViewController(subContentsVC, animated: true)
+        self.navigationController?.pushViewController(user_second, animated: true)
     }
 }
 
-extension userResultViewController : UITableViewDataSource {
+extension User_First : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.mainContens.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: DataTableViewCell.identifier) as! DataTableViewCell
-        let data = DataTableViewCellData(imageUrl: "dummy", text: mainContens[indexPath.row])
+        let data = DataTableViewCellData(imageUrl: "folder", text: mainContens[indexPath.row])
         cell.setData(data)
         return cell
     }
 }
 
-extension userResultViewController : SlideMenuControllerDelegate {
+extension User_First : SlideMenuControllerDelegate {
     
     func leftWillOpen() {
         print("SlideMenuControllerDelegate: leftWillOpen")
@@ -221,7 +155,3 @@ extension userResultViewController : SlideMenuControllerDelegate {
         print("SlideMenuControllerDelegate: rightDidClose")
     }
 }
-
-
-
-

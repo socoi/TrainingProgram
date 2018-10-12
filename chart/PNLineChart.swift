@@ -29,6 +29,7 @@ class PNLineChart: UIView{
         }
     }
     
+    //Nsarray = []. now fixed
     public var yLabels: NSArray = []{
         didSet {
             yLabelNum = CGFloat(yLabels.count)
@@ -51,7 +52,7 @@ class PNLineChart: UIView{
     // Array of LineChartData objects, one for eacg line
     public var chartData: NSArray = []{
         didSet{
-            let yLabelsArray: NSMutableArray = NSMutableArray(capacity: chartData.count)
+            var yLabelsArray: NSMutableArray = NSMutableArray(capacity: chartData.count)
             var yMax: CGFloat = 0.0
             var yMin: CGFloat = CGFloat.infinity
             var yValue: CGFloat!
@@ -111,10 +112,15 @@ class PNLineChart: UIView{
                 yMin = 0.0
             }
             
-            yValueMin = yMin
-            yValueMax = yMax
+            //yValueMin = yMin
+            //yValueMax = yMax
+            
+            //保证Y轴坐标
+            yValueMin = 0
+            yValueMax = 4
             
             if showLabel {
+                yLabelsArray = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
                 yLabels = yLabelsArray as NSArray
             }
             
