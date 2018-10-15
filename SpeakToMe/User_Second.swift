@@ -59,7 +59,8 @@ class User_Second: UIViewController {
         for user in try! db.prepare(t){
             self.mainContens.append(user[userid])
         }
-        self.mainContens = Array(Set(self.mainContens)) //filter重复的
+        self.mainContens = Array(Set(self.mainContens))
+        self.mainContens = self.mainContens.sorted{$0.localizedStandardCompare($1) == .orderedAscending} //排序
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         

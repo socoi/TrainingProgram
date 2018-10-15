@@ -65,13 +65,17 @@ v1.42
 5. speechrecognition, code=203问题(disable OS_ACTIVITY_MODE)
 
 v1.43
-1.蓝色背景字体颜色，曲线是否要考虑y = 0点进行计算, y轴置为整数
+1.蓝色背景字体颜色，曲线是否要考虑y = 0点进行计算, y轴显示
 2.manualinsert UI
 3.全部测试通过时曲线是否有问题
 4.同一天放在同一个folder
-5y.值antilog(待定)
+5 y.值antilog
+6. tableview排序
 
 待解决： recordButtonTapped 可能会一直Stopping 的问题 。 自动识别的准确率
+
+v1.44
+
                     
 
 

@@ -76,6 +76,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 
     public let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     public let semaphore = DispatchSemaphore(value: 2)
+    public var isFinal = false
 
 
 
@@ -526,11 +527,17 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
     }
     
+    
     private func startRecording() throws {
         
         //----------------------------------------------------录音准备 /////////////
         
-        self.inputResults = ""
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setCategory(AVAudioSessionCategoryRecord)
+        try audioSession.setMode(AVAudioSessionModeMeasurement)
+        try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+        
+        
         let fileName = self.userId + "_" + self.userName + "_test" + String(self.mnread_case + 1) + "_" + String(testNumbers + 1) + ".m4a"
         let audioFilename = paths.appendingPathComponent(fileName)
         
@@ -547,31 +554,27 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         //-------------------------------------------------------------------------
         
+        if(testMode == "自動")  {
         
         // Cancel the previous task if it's running.
         if let recognitionTask = recognitionTask {
             recognitionTask.cancel()
             self.recognitionTask = nil
         }
-        
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(AVAudioSessionCategoryRecord)
-        try audioSession.setMode(AVAudioSessionModeMeasurement)
-        try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
-        
+            
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         			
         guard let inputNode = audioEngine.inputNode else { fatalError("Audio engine has no input node") }
         guard let recognitionRequest = recognitionRequest else { fatalError("Unable to created a SFSpeechAudioBufferRecognitionRequest object") }
         
         // Configure request so that results are returned before audio recording is finished
-        recognitionRequest.shouldReportPartialResults = false  //true
+        recognitionRequest.shouldReportPartialResults = true  //true
         
         // A recognition task represents a speech recognition session.
         // We keep a reference to the task so that it can be cancelled.
         //recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest, resultHandler:{ (result, error) in
-        var isFinal = false
+        self.isFinal = false
             
         //user say nothing
             self.inputResults = ""
@@ -579,20 +582,19 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             if let result = result{
                 //here is the result
                 self.inputResults = result.bestTranscription.formattedString
-                isFinal = result.isFinal
             }
             
-            if error != nil || isFinal {
-                self.audioEngine.stop()
-                inputNode.removeTap(onBus: 0)
-
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
-
-                self.recordButton.isEnabled = true
-                self.recordButton.setTitle("開始錄音", for: [])
-            }
-           self.stopRecord()
+//            if error != nil || self.isFinal {
+//                self.audioEngine.stop()
+//                inputNode.removeTap(onBus: 0)
+//
+//                self.recognitionRequest = nil
+//                self.recognitionTask = nil
+//
+//                self.recordButton.isEnabled = true
+//                self.recordButton.setTitle("開始錄音", for: [])
+//            }
+//            if(self.isFinal){self.stopRecord()}
         })
         
         
@@ -603,7 +605,15 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         audioEngine.prepare()
         try audioEngine.start()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        _ = self.semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        }
+     //-----------------------------------------------------------
+     // 手动模式
+        else{
+            self.recordButton.isEnabled = true
+            self.recordButton.setTitle("停止錄音", for: [])}
+        
     }
     
     
@@ -620,29 +630,52 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     
     @IBAction func recordButtonTapped() {
-        DispatchQueue.main.async {
-            if self.audioEngine.isRunning {
-                self.audioRecorder.stop()
-                self.audioEngine.stop()
-                self.recognitionRequest?.endAudio()
+            if (self.audioEngine.isRunning && self.testMode == "自動") {
+                
+                guard let inputNode = audioEngine.inputNode else { fatalError("Audio engine has no input node") }
+                inputNode.removeTap(onBus: 0)
+                self.recognitionRequest = nil
+                self.recognitionTask = nil
                 self.recordButton.isEnabled = false
-                self.recordButton.setTitle("Stopping", for: .disabled)
+                self.recordButton.setTitle("正在識別中.......", for: .disabled)
+               
                 
-            } else {
-                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // change 1 to desired number of seconds
+                    self.semaphore.signal()  //保证录音单线程
+                    self.audioRecorder.stop()
+                    self.audioEngine.stop()
+                    self.recognitionRequest = nil
+                    self.recognitionTask = nil
+                    self.recognitionRequest?.endAudio()
+                    self.stopRecord()
+                    return
+                }
+            }
+            if(!self.audioEngine.isRunning && self.testMode == "自動"){
+                self.recordButton.isEnabled = true
+                self.recordButton.setTitle("開始錄音", for: .disabled)
                 //start to record the time, filter tested case
                 self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
                 self.readingChart = self.readingChart.filter(){$0 != self.testResults}
-                do{
-                    self.semaphore.signal()  //保证录音单线程
-                    try self.startRecording()
-                    self.recordButton.setTitle("停止錄音", for: [])
-                    self.beforeTime = Date()
-                }
-                catch{print("cant start recorder. please")}
+                try! self.startRecording()
+                self.recordButton.setTitle("停止錄音", for: [])
+                self.beforeTime = Date()
+            }
+            
+            if(self.recordButton.currentTitle! == "開始錄音" && self.testMode == "手動"){
+                self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
+                self.readingChart = self.readingChart.filter(){$0 != self.testResults}
+                try! self.startRecording()
+                self.beforeTime = Date()
+                return
+            }
+            
+            if(self.recordButton.currentTitle! == "停止錄音" && self.testMode == "手動"){
+                self.audioRecorder.stop()
+                self.stopRecord()
+                self.recordButton.setTitle("開始錄音", for: [])
             }
         }
-    }
 
     
     func manualInsert(timeSpent : Double){
@@ -717,6 +750,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         //record the time interval(according to definition)
         let nowTime = Date()
         var timeSpent = nowTime.timeIntervalSince(beforeTime) + 0.18
+        if(testMode == "自動"){ timeSpent -= 1}//1s延迟
         let (errorWordsNum, filterWords) = findAccuracy(inputResults: inputResults, testResults: testResults)
         //--------------------------------------------------------------record for databse
         errorWord.append(filterWords)

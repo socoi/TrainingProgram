@@ -54,10 +54,13 @@ class User_First: UIViewController {
         
         for user in try! db.prepare(testResults){
             let t = user[testTime].components(separatedBy: ",") //格式是日期 + 当天时间
-            self.mainContens.append(t[0])                       //只需显示日期
+            self.mainContens.append(change_Date(date: t[0], change: true))
             self.testTime.append(user[testTime])
         }
+        
         self.mainContens = Array(Set(self.mainContens)) //filter重复的
+        self.mainContens = self.mainContens.sorted{$0.localizedStandardCompare($1) == .orderedAscending}
+        
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         
@@ -97,12 +100,12 @@ extension User_First : UITableViewDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let user_second = storyboard.instantiateViewController(withIdentifier: "User_Second") as! User_Second
         let currentCell = tableView.cellForRow(at: indexPath)! as! DataTableViewCell
-        let currentText = (currentCell.dataText?.text!)! + "%"
+        let currentText = change_Date(date: (currentCell.dataText?.text!)! , change: false )
         
-        let t = testResults.filter(testTime.like(currentText)) //like
-        for user in try! db.prepare(t){
+        let t = testResults.filter(testTime.like(currentText + "%")) //like
+        for _ in try! db.prepare(t){
             //跳转到相应用户id的子目录
-            user_second.testTime = (currentCell.dataText?.text!)! //只有当天日期
+            user_second.testTime = currentText //只有当天日期
         }
         self.navigationController?.pushViewController(user_second, animated: true)
     }

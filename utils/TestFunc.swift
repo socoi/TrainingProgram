@@ -45,7 +45,7 @@ public func findAccuracy(inputResults : String, testResults : String) -> (Int,St
     
     //user say nothing -> equal to before
     if(inputResults == ""){
-        return (12,"")
+        return (12,testResults)
     }
     
     for i in inputResults.characters{
@@ -145,6 +145,26 @@ func findTheta(_ xs : [Double]) -> (Double , Int){
 
 //------------------------------------------------------------------------------------------------
 
-
+// d//m/yyyy <-> yyyy/m/d 便于排序
+func change_Date(date: String, change: Bool) -> String{
+    if change{
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "d/m/yyyy"// yyyy-MM-dd"
+    let new_dateFormatter = DateFormatter()
+    new_dateFormatter.dateFormat = "yyyy/m/d"// yyyy-MM-dd"
+    let date_1 = dateFormatter.date(from: date)//只需显示日期
+    let new_date = new_dateFormatter.string(from: date_1!)
+        return new_date}
+    else{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy/m/d"
+        let new_dateFormatter = DateFormatter()
+        new_dateFormatter.dateFormat = "d/m/yyyy"
+        let date_1 = dateFormatter.date(from: date)
+        let new_date = new_dateFormatter.string(from: date_1!)
+        return new_date
+    }
+    
+    }
 
 

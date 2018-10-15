@@ -58,6 +58,7 @@ class User_Third: UIViewController {
         }
         
         self.mainContens = Array(Set(self.mainContens)) //filter重复的
+        self.mainContens = self.mainContens.sorted{$0.localizedStandardCompare($1) == .orderedAscending} //排序
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         }
