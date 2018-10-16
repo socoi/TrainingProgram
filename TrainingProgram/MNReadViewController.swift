@@ -30,8 +30,8 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
     var selectedFont = "黑色"
     var selectedBack = "白色"
     var selectedDistance = "40cm"
-    var selectedLanguage = "國語"
-    var selectedTest = "手動"
+    var selectedLanguage = "廣東話"
+    var selectedTest = "自動"
     var selectedNum = "1"
 
     
@@ -52,8 +52,8 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
         self.testNumber.delegate = self
         self.testNumber.dataSource = self
         
-        testLanguage.selectRow(0, inComponent: 0, animated: false)
-        testMode.selectRow(1, inComponent: 0, animated: false)
+        //testLanguage.selectRow(0, inComponent: 0, animated: false)
+        //testMode.selectRow(0, inComponent: 0, animated: false)
 
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(MNReadViewController.imageTapped(gesture:)))

@@ -379,12 +379,10 @@ class PNLineChart: UIView{
                 let first_index = 0.1 * controlIndex[3] - 0.4
                 let xIntersect = (controlIndex[0] - first_index)/0.1
                 let scope = pow(M_E, controlIndex[2]) //e^delta[2]
-                let x_axis = (controlIndex[0] - controlIndex[1] / scope - first_index) / 0.1  //与x轴交点
+                var x_axis = (controlIndex[0] - controlIndex[1] / scope - first_index) / 0.1  //与x轴交点
                 var x: CGFloat = 0
                 
-                
-                
-                
+                if(x_axis < first_index){ x_axis = first_index} //与x轴交点不要越过y轴
                 //if(index == 0){x = chartMargin * 2.0 + CGFloat(controlIndex[0]) * xLabelWidth}
                 if(index == 0){x = chartMargin * 2.0 + CGFloat(x_axis) * xLabelWidth}
                 if(index == 1){x = chartMargin * 2.0 + CGFloat(xIntersect) * xLabelWidth}

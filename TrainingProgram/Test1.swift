@@ -472,6 +472,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        print(SFSpeechRecognizer.supportedLocales())
+        
         agepickView.delegate = self
         sexpickView.delegate = self
         agepickView.dataSource = self
@@ -582,6 +584,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             if let result = result{
                 //here is the result
                 self.inputResults = result.bestTranscription.formattedString
+
             }
             
 //            if error != nil || self.isFinal {
@@ -631,16 +634,14 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     @IBAction func recordButtonTapped() {
             if (self.audioEngine.isRunning && self.testMode == "自動") {
-                
-                guard let inputNode = audioEngine.inputNode else { fatalError("Audio engine has no input node") }
-                inputNode.removeTap(onBus: 0)
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
                 self.recordButton.isEnabled = false
                 self.recordButton.setTitle("正在識別中.......", for: .disabled)
-               
-                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // change 1 to desired number of seconds
+                    guard let inputNode = self.audioEngine.inputNode else { fatalError("Audio engine has no input node") }
+                    inputNode.removeTap(onBus: 0)
+                    self.recognitionRequest = nil
+                    self.recognitionTask = nil
+                    
                     self.semaphore.signal()  //保证录音单线程
                     self.audioRecorder.stop()
                     self.audioEngine.stop()
@@ -655,9 +656,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.recordButton.isEnabled = true
                 self.recordButton.setTitle("開始錄音", for: .disabled)
                 //start to record the time, filter tested case
+                try! self.startRecording()
                 self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
                 self.readingChart = self.readingChart.filter(){$0 != self.testResults}
-                try! self.startRecording()
                 self.recordButton.setTitle("停止錄音", for: [])
                 self.beforeTime = Date()
             }
