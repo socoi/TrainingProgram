@@ -19,17 +19,25 @@ extension UIViewController {
         self.slideMenuController()?.addRightGestures()
     }
     
-    func returnPrevious(){
-        self.addLeftBarButtonWithImage(UIImage(named: "ic_menu_black_24dp")!)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "User_First") as! User_First
-        self.navigationController?.pushViewController(subContentsVC, animated: true)
-    }
-    
     func removeNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.rightBarButtonItem = nil
         self.slideMenuController()?.removeLeftGestures()
         self.slideMenuController()?.removeRightGestures()
+    }
+    
+    func addReturnButton(_ buttonImage: UIImage) {
+        let leftButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.clickNavigation))
+        navigationItem.leftBarButtonItem = leftButton
+    }
+    
+    func clickNavigation(){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let subContentsVC = storyboard.instantiateViewController(withIdentifier: "MNReadViewController") as! MNReadViewController
+        self.navigationController?.pushViewController(subContentsVC, animated: true)
+    }
+    
+    public func addImageNavigation(){
+        self.addReturnButton(UIImage(named: "return")!)
     }
 }

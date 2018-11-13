@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2B89AA10D6100BD9224FEC53 /* Pods_TrainingProgram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CC9CC950E550AF07E76492 /* Pods_TrainingProgram.framework */; };
+		631CB9C92189A42C00311ADA /* Demo_Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631CB9C82189A42C00311ADA /* Demo_Content.swift */; };
 		6324A87B1E8A15FC00EC65F2 /* SwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */; };
 		6330A727206635FC00FD3F41 /* User_Second.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6330A726206635FC00FD3F41 /* User_Second.swift */; };
 		63363382206D1C74007221D9 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63363381206D1C74007221D9 /* DemoViewController.swift */; };
@@ -90,6 +91,7 @@
 
 /* Begin PBXFileReference section */
 		2A01D912058A4404AB472FE3 /* Pods-TrainingProgram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrainingProgram.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TrainingProgram/Pods-TrainingProgram.debug.xcconfig"; sourceTree = "<group>"; };
+		631CB9C82189A42C00311ADA /* Demo_Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo_Content.swift; sourceTree = "<group>"; };
 		6324A87A1E8A15FC00EC65F2 /* SwiftViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftViewController.swift; sourceTree = SOURCE_ROOT; };
 		6330A726206635FC00FD3F41 /* User_Second.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User_Second.swift; sourceTree = "<group>"; };
 		63363381206D1C74007221D9 /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				6330A726206635FC00FD3F41 /* User_Second.swift */,
 				639F34901E52CE7B00D0F47C /* User_Third.swift */,
 				639F34B01E52D2DF00D0F47C /* SubContentsViewController.swift */,
+				631CB9C82189A42C00311ADA /* Demo_Content.swift */,
 			);
 			name = ResultPage;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 				63C78B141E5351C500479725 /* PNPieChart.swift in Sources */,
 				639F34A51E52D15A00D0F47C /* UITableViewExtension.swift in Sources */,
 				639F34D51E53081500D0F47C /* MainViewController.swift in Sources */,
+				631CB9C92189A42C00311ADA /* Demo_Content.swift in Sources */,
 				63C78B0C1E5351C500479725 /* PNBar.swift in Sources */,
 				639F34B21E52D2DF00D0F47C /* ExSlideMenuController.swift in Sources */,
 				639F34A21E52D15A00D0F47C /* UIColor.swift in Sources */,

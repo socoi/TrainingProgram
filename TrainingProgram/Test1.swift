@@ -81,11 +81,38 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
 
 
     public func messageBox(titlemessage: String, title: String, navi: Bool){
+        
         let optionMenu = UIAlertController(title: titlemessage,message:"", preferredStyle: .alert)
         let okAction = UIAlertAction(title: title, style: .cancel, handler: {
             (alert: UIAlertAction!) -> Void in
             if(navi == true){
-                self.performSegue(withIdentifier: "Test1", sender: self)}
+                
+                //---------------------------------------------------- demo use
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let subContentsVC = storyboard.instantiateViewController(withIdentifier: "Demo_Content") as! Demo_Content
+                subContentsVC.yLabel = []
+                subContentsVC.costTime = []
+                subContentsVC.readChart = []
+                subContentsVC.errorNum = []
+                subContentsVC.errorWord = []
+                subContentsVC.distanceVary = self.distanceVary
+                let num = self.timeSpent.count
+                for i in 0...num - 1{
+                    subContentsVC.yLabel.append(self.timeSpent[i])
+                    subContentsVC.costTime.append(self.costTime[i])
+                    subContentsVC.readChart.append(self.selectedChart[i])
+                    subContentsVC.errorNum.append(self.errorNum[i])
+                    subContentsVC.errorWord.append(self.errorWord[i])
+                }
+                for _ in 0...(18 - num){
+                    subContentsVC.yLabel.append(0)
+                    subContentsVC.costTime.append(0)
+                    subContentsVC.readChart.append("None")
+                    subContentsVC.errorNum.append(-99)
+                    subContentsVC.errorWord.append("None")
+                }
+                self.navigationController?.pushViewController(subContentsVC, animated: true)}
+            //----------------------------------------------------
         })
         optionMenu.addAction(okAction)
         optionMenu.popoverPresentationController?.sourceView = self.textView
@@ -176,130 +203,133 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             }
         }
         
-        let attributedString = NSAttributedString(string: "個人信息", attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
-            ])
+        self.countDownNumber = 4
+        self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
         
-        let height:NSLayoutConstraint = NSLayoutConstraint(item: startMenu.view, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: self.view.frame.height * 0.80)
-        startMenu.setValue(attributedString, forKey: "attributedTitle")
-        startMenu.view.addConstraint(height)
-
-        
-        startMenu.addTextField {
-            (textField: UITextField!) -> Void in
-            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-            textField.addConstraint(heightConstraint)
-            textField.placeholder = "輸入id"
-            textField.font = UIFont.systemFont(ofSize: 30)
-            textField.clearButtonMode = .whileEditing
-
-        }
-        
-        startMenu.addTextField {
-            (textField: UITextField!) -> Void in
-            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-            textField.addConstraint(heightConstraint)
-            textField.placeholder = "輸入姓名"
-            textField.font = UIFont.systemFont(ofSize: 30)
-            textField.clearButtonMode = .whileEditing
-            
-        }
-        
-        startMenu.addTextField {
-            (textField: UITextField!) -> Void in
-            self.sextextField = textField
-            let heightConstraint = NSLayoutConstraint(item: self.sextextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-            self.sextextField.addConstraint(heightConstraint)
-            self.sextextField.placeholder = "輸入性別"
-            self.sextextField.font = UIFont.systemFont(ofSize: 30)
-            self.sextextField.clearButtonMode = .whileEditing
-            self.sextextField.inputView = self.sexpickView
-            
-        }
-        
-        startMenu.addTextField {
-            (textField: UITextField!) -> Void in
-            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
-            textField.addConstraint(heightConstraint)
-            textField.placeholder = "輸入出生日期"
-            textField.font = UIFont.systemFont(ofSize: 30)
-            textField.clearButtonMode = .whileEditing
-            
-            let datePickerView:UIDatePicker = UIDatePicker()
-            datePickerView.datePickerMode = UIDatePickerMode.date
-            
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd/MM/yyyy"
-            let someDateTime = formatter.date(from: "01/01/2008")
-            datePickerView.setDate(someDateTime!, animated: false)
-            
-            textField.inputView = datePickerView
-            datePickerView.addTarget(self, action: #selector(self.datePickerValueChanged), for: UIControlEvents.valueChanged)
-            
-        }
-        
-    
-        
-        let okAction = UIAlertAction(title: "開始測試", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            
-            
-            let login  = self.startMenu.textFields
-            let userid = login![0] as UITextField
-            let username = login![1] as UITextField
-            let usersex = login![2] as UITextField
-            //let userage = login![3] as UITextField
-            let userbirth = login![3] as UITextField
-            
-            self.userName = username.text!
-            self.userId = userid.text!
-            self.userSex = usersex.text!
-            //self.userAge = Int(userage.text!)!
-            self.userAge = 0 //不需要输入年龄，暂时默认都为0吧
-            self.userBirth = userbirth.text!
-            
-            let path = NSSearchPathForDirectoriesInDomains(
-                    .documentDirectory, .userDomainMask, true
-                    ).first!
-                
-            let db = try! Connection("\(path)/db.sqlite3")
-            let testResults = Table("testResults")
-            let userID = Expression<String>("userid")
-            let t = testResults.filter(userID == self.userId)
-            let queryNum = try! db.scalar(t.count)
-            
-            //保证userid不重复
-                if(queryNum == 0) && (userid.text != "") && (usersex.text != "") && (userbirth.text != "") && (username.text != ""){
-                    //prepare for the test
-                    self.countDownNumber = 4
-                    self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
-                }
-            
-                else{
-                    self.messageBox(titlemessage: "用戶信息不完整或用戶已存在", title: "返回", navi: true)
-            }
-          
-            
-        })
-        
-        let cancelAction = UIAlertAction(title: "返回", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            
-            //return the main page
-            self.performSegue(withIdentifier: "Test1", sender: self)
-            
-        })
-        
-        
-        startMenu.popoverPresentationController?.sourceView = textView
-        let t1 = fullScreenSize.height
-        let t2 = fullScreenSize.width
-        
-        startMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:500,height:500)
-        startMenu.popoverPresentationController?.permittedArrowDirections = [.up]
-        startMenu.addAction(okAction)
-        startMenu.addAction(cancelAction)
-        self.present(startMenu, animated: true, completion: nil)
+//        let attributedString = NSAttributedString(string: "個人信息", attributes: [
+//            NSFontAttributeName : UIFont.systemFont(ofSize: 40) //your font here
+//            ])
+//
+//        let height:NSLayoutConstraint = NSLayoutConstraint(item: startMenu.view, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: self.view.frame.height * 0.80)
+//        startMenu.setValue(attributedString, forKey: "attributedTitle")
+//        startMenu.view.addConstraint(height)
+//
+//
+//        startMenu.addTextField {
+//            (textField: UITextField!) -> Void in
+//            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+//            textField.addConstraint(heightConstraint)
+//            textField.placeholder = "輸入id"
+//            textField.font = UIFont.systemFont(ofSize: 30)
+//            textField.clearButtonMode = .whileEditing
+//
+//        }
+//
+//        startMenu.addTextField {
+//            (textField: UITextField!) -> Void in
+//            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+//            textField.addConstraint(heightConstraint)
+//            textField.placeholder = "輸入姓名"
+//            textField.font = UIFont.systemFont(ofSize: 30)
+//            textField.clearButtonMode = .whileEditing
+//
+//        }
+//
+//        startMenu.addTextField {
+//            (textField: UITextField!) -> Void in
+//            self.sextextField = textField
+//            let heightConstraint = NSLayoutConstraint(item: self.sextextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+//            self.sextextField.addConstraint(heightConstraint)
+//            self.sextextField.placeholder = "輸入性別"
+//            self.sextextField.font = UIFont.systemFont(ofSize: 30)
+//            self.sextextField.clearButtonMode = .whileEditing
+//            self.sextextField.inputView = self.sexpickView
+//
+//        }
+//
+//        startMenu.addTextField {
+//            (textField: UITextField!) -> Void in
+//            let heightConstraint = NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100)
+//            textField.addConstraint(heightConstraint)
+//            textField.placeholder = "輸入出生日期"
+//            textField.font = UIFont.systemFont(ofSize: 30)
+//            textField.clearButtonMode = .whileEditing
+//
+//            let datePickerView:UIDatePicker = UIDatePicker()
+//            datePickerView.datePickerMode = UIDatePickerMode.date
+//
+//            let formatter = DateFormatter()
+//            formatter.dateFormat = "dd/MM/yyyy"
+//            let someDateTime = formatter.date(from: "01/01/2008")
+//            datePickerView.setDate(someDateTime!, animated: false)
+//
+//            textField.inputView = datePickerView
+//            datePickerView.addTarget(self, action: #selector(self.datePickerValueChanged), for: UIControlEvents.valueChanged)
+//
+//        }
+//
+//
+//
+//        let okAction = UIAlertAction(title: "開始測試", style: .default, handler: {
+//            (alert: UIAlertAction!) -> Void in
+//
+//
+//            let login  = self.startMenu.textFields
+//            let userid = login![0] as UITextField
+//            let username = login![1] as UITextField
+//            let usersex = login![2] as UITextField
+//            //let userage = login![3] as UITextField
+//            let userbirth = login![3] as UITextField
+//
+//            self.userName = username.text!
+//            self.userId = userid.text!
+//            self.userSex = usersex.text!
+//            //self.userAge = Int(userage.text!)!
+//            self.userAge = 0 //不需要输入年龄，暂时默认都为0吧
+//            self.userBirth = userbirth.text!
+//
+//            let path = NSSearchPathForDirectoriesInDomains(
+//                    .documentDirectory, .userDomainMask, true
+//                    ).first!
+//
+//            let db = try! Connection("\(path)/db.sqlite3")
+//            let testResults = Table("testResults")
+//            let userID = Expression<String>("userid")
+//            let t = testResults.filter(userID == self.userId)
+//            let queryNum = try! db.scalar(t.count)
+//
+//            //保证userid不重复
+//                if(queryNum == 0) && (userid.text != "") && (usersex.text != "") && (userbirth.text != "") && (username.text != ""){
+//                    //prepare for the test
+//                    self.countDownNumber = 4
+//                    self.timeRecord = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDown), userInfo: nil, repeats: true)
+//                }
+//
+//                else{
+//                    self.messageBox(titlemessage: "用戶信息不完整或用戶已存在", title: "返回", navi: true)
+//            }
+//
+//
+//        })
+//
+//        let cancelAction = UIAlertAction(title: "返回", style: .default, handler: {
+//            (alert: UIAlertAction!) -> Void in
+//
+//            //return the main page
+//            self.performSegue(withIdentifier: "Test1", sender: self)
+//
+//        })
+//
+//
+//        startMenu.popoverPresentationController?.sourceView = textView
+//        let t1 = fullScreenSize.height
+//        let t2 = fullScreenSize.width
+//
+//        startMenu.popoverPresentationController?.sourceRect = CGRect(x:t1/3,y:t2/2,width:500,height:500)
+//        startMenu.popoverPresentationController?.permittedArrowDirections = [.up]
+//        startMenu.addAction(okAction)
+//        startMenu.addAction(cancelAction)
+//        self.present(startMenu, animated: true, completion: nil)
         
         }
     
@@ -424,10 +454,11 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     public func stopTest(){
       
-        updataDataBase()
+        //updataDataBase()
         
         //全部测试结束
-        if(self.mnread_num == 1){self.messageBox(titlemessage: "全部測試結束", title: "返回", navi: true)}
+        textView.backgroundColor = UIColor.white
+        if(self.mnread_num == 1){self.messageBox(titlemessage: "全部測試結束", title: "查看結果", navi: true)}
         else//准备另一个测试
         {
             self.mnread_num -= 1
@@ -552,7 +583,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
         audioRecorder.delegate = self
-        audioRecorder.record()
+        //audioRecorder.record()
         
         //-------------------------------------------------------------------------
         
@@ -643,7 +674,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                     self.recognitionTask = nil
                     
                     self.semaphore.signal()  //保证录音单线程
-                    self.audioRecorder.stop()
+                    //self.audioRecorder.stop()
                     self.audioEngine.stop()
                     self.recognitionRequest = nil
                     self.recognitionTask = nil

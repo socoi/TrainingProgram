@@ -330,7 +330,7 @@ class PNLineChart: UIView{
                     
                     //精度,0不显示
                     if yValue != 0{
-                    text[index] = String(format: "%.3f",Double(yValue))}
+                    text[index] = String(format: "%.2f",Double(yValue))}
                     textLabel.text = text[index]
                     self.addSubview(textLabel)
                     
@@ -404,8 +404,8 @@ class PNLineChart: UIView{
                     if(index == 1){
                     let textLabel = UITextView(frame : CGRect(x: x - inflexionWidth/2.0 - 40, y: y - inflexionWidth/2.0 - 85, width: 90, height: 40))
                         
-                    textPoint[0] = String(format: "%.3f",Double(controlIndex[0]))
-                    textPoint[1] = String(format: "%.3f",Double(pow(10, controlIndex[1])))
+                    textPoint[0] = String(format: "%.2f",Double(controlIndex[0]))
+                    textPoint[1] = String(format: "%.2f",Double(pow(10, controlIndex[1])))
                         textLabel.text = "CPS: " + textPoint[0] + "\n" + "MRS: " + textPoint[1] + "\n"
                         self.addSubview(textLabel)}
                     

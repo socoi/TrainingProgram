@@ -580,11 +580,46 @@
             </objects>
             <point key="canvasLocation" x="22" y="-67"/>
         </scene>
+        <!--Demo Content-->
+        <scene sceneID="ogS-s1-sFS">
+            <objects>
+                <viewController storyboardIdentifier="Demo_Content" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vwo-za-xFP" customClass="Demo_Content" customModule="TrainingProgram" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8nj-1b-yOi"/>
+                        <viewControllerLayoutGuide type="bottom" id="27m-MZ-jTD"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleAspectFit" id="1T3-zR-g2Y">
+                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9xg-Gt-L5G" userLabel="mnreadChart">
+                                <rect key="frame" x="0.0" y="405" width="1366" height="619"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.94104245409999998" green="1" blue="0.95833793769999998" alpha="0.59666593310000005" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GeB-f1-voz" userLabel="spreadsheetView" customClass="SpreadsheetView" customModule="SpreadsheetView">
+                                <rect key="frame" x="0.0" y="49" width="1366" height="401"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="0.0" height="0.0"/>
+                    <connections>
+                        <outlet property="mnreadChart" destination="9xg-Gt-L5G" id="nZ7-Fn-y17"/>
+                        <outlet property="spreadsheetView" destination="GeB-f1-voz" id="svq-7C-nOh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eHi-72-3Mm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-863.10395314787695" y="585.9375"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Play_button_next_stop_music_pause" width="512" height="512"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="SYr-NX-VIt"/>
+        <segue reference="26T-m9-mRA"/>
     </inferredMetricsTieBreakers>
 </document>

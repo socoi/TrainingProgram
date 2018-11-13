@@ -24,14 +24,14 @@ class MNReadViewController : UIViewController, UIPickerViewDelegate, UIPickerVie
     let backRow =  ["白色","藍色","綠色","黑色"]
     let distanceRow = ["40cm", "33cm", "25cm", "20cm", "16cm", "13cm"]
     let languageRow = ["廣東話", "國語"]
-    let testRow = ["自動", "手動"]
-    let testNumRow = ["1","2","3"]
+    let testRow = ["手動","自動"]
+    let testNumRow = ["1"]
     
     var selectedFont = "黑色"
     var selectedBack = "白色"
     var selectedDistance = "40cm"
     var selectedLanguage = "廣東話"
-    var selectedTest = "自動"
+    var selectedTest = "手動"
     var selectedNum = "1"
 
     
