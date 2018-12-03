@@ -17,17 +17,20 @@ func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String,
     // xValue: min -> 1.5 , yVlaue: 0 -> value
     // 需要去除y 中可能有的0(如果19个测试都通过则没有)与相应的x
 
-    if y_value.contains(0) && y_value.count > 1{
-        x = Array(x_value[1...x_value.count - 1])
-        y = Array(y_value[1...y_value.count - 1])
-    if y.contains(0) || x.count != y.count{
-        print(" error, x_array and y_array have different length")
-        }
-    }
+//    if y_value.contains(0) && y_value.count > 1{
+//        x = Array(x_value[1...x_value.count - 1])
+//        y = Array(y_value[1...y_value.count - 1])
+//    if y.contains(0) || x.count != y.count{
+//        print(" error, x_array and y_array have different length")
+//        }
+//    }
+    
+    x = Array(x_value)
+    y = Array(y_value)
     
     // http request
     
-    let url = URL(string: "http://47.107.48.230/tomcat/webapps/curve_fit.php")!
+    let url = URL(string: "http://120.31.136.53/curve_fit.php")!
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     //request.setValue("application/json", forHTTPHeaderField: "Content-type")
@@ -50,8 +53,8 @@ func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String,
         }
         
         let string = String(data: data, encoding: String.Encoding.utf8)
-        //print(string) //JSONSerialization
-        //print("response = \(response)")
+        print(string) //JSONSerialization
+        print("response = \(response)")
         
         if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
             print("statusCode should be 200, but is \(httpStatus.statusCode)")

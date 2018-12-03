@@ -7,6 +7,8 @@
 import Foundation
 import UIKit
 import SQLite
+import MessageUI
+
 
 @objc public protocol SlideMenuControllerDelegate {
     @objc optional func leftWillOpen()
@@ -41,8 +43,9 @@ public struct SlideMenuOptions {
     public static var tapGesturesEnabled: Bool = true
 }
 
-open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate {
-
+open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, MFMailComposeViewControllerDelegate  {
+    
+    
     public enum SlideAction {
         case open
         case close
@@ -1022,52 +1025,111 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate {
         return rightContainerView.frame.contains(point)
     }
     
-}
-
-
-extension UIViewController {
-    
-    public func slideMenuController() -> SlideMenuController? {
-        var viewController: UIViewController? = self
-        while viewController != nil {
-            if viewController is SlideMenuController {
-                return viewController as? SlideMenuController
-            }
-            viewController = viewController?.parent
-        }
-        return nil
-    }
-    
-    public func addLeftBarButtonWithImage(_ buttonImage: UIImage) {
-        let leftButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.toggleLeft))
-        navigationItem.leftBarButtonItem = leftButton
-    }
-    
-    public func addRightBarButtonWithImage(_ buttonImage: UIImage) {
-        let rightButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.deleteDB))
-        navigationItem.rightBarButtonItem = rightButton
-    }
-    
-    public func deleteDB(){
-        let optionMenu = UIAlertController(title: "Attention", message: "Are you sure to delete all records?", preferredStyle: .alert)
+    public func sqlToCSV(){
         
-        let okAction = UIAlertAction(title: "Delete", style: .destructive, handler: {
+        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true
+            ).first!
+        let db = try! Connection("\(path)/db.sqlite3")
+        let testResults = Table("testResults")
+        
+        let fileName1 = "fit_curve.csv"
+        let fileName2 = "raw_data.csv"
+        
+        let userid = Expression<String>("userid")      //给测试人员的独一id
+        let sex = Expression<String>("sex")
+        let birth = Expression<String>("birth")
+        let userName = Expression<String>("userName")  //用户姓名
+        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+        let distanceVary = Expression<Double>("distanceVary")
+        
+        var csvText1 = "Subject ID, Subject Name, TrialID, MRS, Islope, CPS\n"
+        var csvText2 = "Subject ID, Name, Sex, Date of Birth, No. of trial, Size, Reading Time, No. of Error, reading Distance, Readingspeed(CPM), logCPM\n"
+        
+        let realDistance : [Double:Int] = [1.0 : 40, 2.0: 33
+            , 3.0: 25 , 4.0: 20, 5.0: 16, 6.0: 13]
+        
+        let realSex :[String:String] = ["男": "M", "女" : "F"]
+        
+        
+        for user in try! db.prepare(testResults){
+            
+            let id = user[userid]
+            let name = user[userName]
+            let sex = realSex[user[sex]]!
+            let birth = user[birth]
+            let testCase = user[testCase]
+            let vary = user[distanceVary]
+            
+            // 可能出现编码问题
+            //let name = String(utf8String: name_code.cString(using: .utf8)!)
+            // let sex = String(utf8String: sex_code.cString(using: .utf8)!)
+            
+            for i in 1...19
+            {
+                let size = (Double(17) - vary - Double(i)) / 10.0
+                let errorN = "errorNum" + "\(i)"
+                let costTimeN = "costTime" + "\(i)"
+                let logCPMN = "timeSpent" + "\(i)" // log
+                
+                let logCPM = user[Expression<Double>(logCPMN)]
+                let CPM = pow(10, logCPM)
+                let numofError = user[Expression<Int>(errorN)]
+                let readingTime = user[Expression<Double>(costTimeN)]
+                
+                
+                if(user[Expression<Int>(errorN)] != -99 && user[Expression<Int>(errorN)] != 12 ){
+                    let newLine2 = "\(id),\(name),\(sex),\(birth),\(testCase),\(size),\(readingTime),\(numofError),\(realDistance[vary]!),\(CPM),\(logCPM)\n"
+                    
+                    csvText2.append(newLine2)
+                    
+                }
+            }
+            
+        }
+        
+        // If the view controller can send the email.
+        // This will show an email-style popup that allows you to enter
+        // Who to send the email to, the subject, the cc's and the message.
+        // As the .CSV is already attached, you can simply add an email
+        // and press send.
+        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let fileURL2 = dir?.appendingPathComponent(fileName2)
+        try! csvText2.write(to: fileURL2!, atomically: true, encoding: .utf8)
+            
+        
+        let emailController = MFMailComposeViewController()
+        emailController.mailComposeDelegate = self
+        emailController.setSubject("CSV File")
+        emailController.setMessageBody("", isHTML: false)
+        emailController.addAttachmentData((NSData(contentsOfFile: (fileURL2?.path)!)! as Data) as Data, mimeType: "text/csv", fileName: "Raw_data.csv")
+        
+        if MFMailComposeViewController.canSendMail() {
+            present(emailController, animated: true, completion: nil)
+        }
+    }
+    
+    public func mailComposeController(_ controller: MFMailComposeViewController,
+                               didFinishWith result: MFMailComposeResult,
+                               error: Swift.Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+    
+    public func exportCSV(){
+        let optionMenu = UIAlertController(title: "導出", message: "確認要導出數據嗎??", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "確認", style: .destructive, handler: {
             (alert: UIAlertAction!) -> Void in
             
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true
-                ).first!
-            let db = try! Connection("\(path)/db.sqlite3")
-            let testResults = Table("testResults")
-            let sqliteSequence = Table("sqlite_sequence")
+            // export CSV
+            self.sqlToCSV()
             
-            try! db.run(sqliteSequence.delete())
-            try! db.run(testResults.delete())
             
-            //refresh the page
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "User_Second") as! User_Second
-            self.navigationController?.pushViewController(vc, animated: false)
-
+            //            //refresh the page
+//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//            let vc = storyboard.instantiateViewController(withIdentifier: "User_First") as! User_First
+//            self.navigationController?.pushViewController(vc, animated: false)
+            
+            
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
@@ -1088,7 +1150,43 @@ extension UIViewController {
         optionMenu.addAction(okAction)
         optionMenu.addAction(cancelAction)
         self.present(optionMenu, animated: true, completion: nil)
+        
+    }
+}
 
+
+
+extension UIViewController {
+    
+    public func export(){
+        let a = slideMenuController()
+        a?.exportCSV()
+    }
+        
+    public func slideMenuController() -> SlideMenuController? {
+        var viewController: UIViewController? = self
+        while viewController != nil {
+            if viewController is SlideMenuController {
+                return viewController as? SlideMenuController
+            }
+            viewController = viewController?.parent
+        }
+        return nil
+    }
+    
+    public func addRightBarButtonWithImage(_ buttonImage: UIImage) {
+        let rightButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.export))
+        navigationItem.rightBarButtonItem = rightButton
+    }
+    
+    public func addLeftBarButtonWithImage(_ buttonImage: UIImage) {
+        let leftButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.toggleLeft))
+        navigationItem.leftBarButtonItem = leftButton
+    }
+    
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        controller.dismiss(animated: true, completion: nil)
     }
     
     public func toggleLeft() {
@@ -1124,3 +1222,6 @@ extension UIViewController {
         }
     }
 }
+
+
+

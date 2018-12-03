@@ -26,7 +26,7 @@ class User_First: UIViewController {
         self.tableView.reloadData()
         self.tableView.registerCellNib(DataTableViewCell.self)
         
-        //self.addRightBarButtonWithImage(UIImage(named: "ic_notifications_black_24dp")!)
+        self.addRightBarButtonWithImage(UIImage(named: "ic_notifications_black_24dp")!)
         self.setNavigationBarItem()
         tableView.allowsMultipleSelectionDuringEditing = false
     }
@@ -124,37 +124,38 @@ extension User_First : UITableViewDataSource {
     }
 }
 
-extension User_First : SlideMenuControllerDelegate {
-    
-    func leftWillOpen() {
-        print("SlideMenuControllerDelegate: leftWillOpen")
-    }
-    
-    func leftDidOpen() {
-        print("SlideMenuControllerDelegate: leftDidOpen")
-    }
-    
-    func leftWillClose() {
-        print("SlideMenuControllerDelegate: leftWillClose")
-    }
-    
-    func leftDidClose() {
-        print("SlideMenuControllerDelegate: leftDidClose")
-    }
-    
-    func rightWillOpen() {
-        print("SlideMenuControllerDelegate: rightWillOpen")
-    }
-    
-    func rightDidOpen() {
-        print("SlideMenuControllerDelegate: rightDidOpen")
-    }
-    
-    func rightWillClose() {
-        print("SlideMenuControllerDelegate: rightWillClose")
-    }
-    
-    func rightDidClose() {
-        print("SlideMenuControllerDelegate: rightDidClose")
-    }
-}
+//extension User_First : SlideMenuControllerDelegate {
+//
+//    func leftWillOpen() {
+//        print("SlideMenuControllerDelegate: leftWillOpen")
+//    }
+//
+//    func leftDidOpen() {
+//        print("SlideMenuControllerDelegate: leftDidOpen")
+//    }
+//
+//    func leftWillClose() {
+//        print("SlideMenuControllerDelegate: leftWillClose")
+//    }
+//
+//    func leftDidClose() {
+//        print("SlideMenuControllerDelegate: leftDidClose")
+//    }
+//
+//    func rightWillOpen() {
+//        print("SlideMenuControllerDelegate: rightWillOpen")
+//    }
+//
+//    func rightDidOpen() {
+//        print("SlideMenuControllerDelegate: rightDidOpen")
+//    }
+//
+//    func rightWillClose() {
+//        print("SlideMenuControllerDelegate: rightWillClose")
+//    }
+//
+//    func rightDidClose() {
+//        print("SlideMenuControllerDelegate: rightDidClose")
+//    }
+//}
+

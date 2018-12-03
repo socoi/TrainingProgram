@@ -36,7 +36,7 @@ class MainViewController: UIViewController {
         let userName = Expression<String>("userName")  //用户姓名
         let testTime = Expression<String>("testTime")  //测试当时的时间
         let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
-        let distanceVary = Expression<Double>("distanceVary")
+        let distanceVary = Expression<Double>("distanceVary") // 40->13 1,2,3,4,5,6
         let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase + testMode)
         let language  = Expression<String>("language") //广东话,普通话
         let testMode = Expression<String>("testMode") //自动或者手动

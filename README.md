@@ -75,7 +75,8 @@ v1.43
 v1.44
 1. recordButtonTapped 可能会一直Stopping 的问题 。 自动识别的准确率
 
- 
+ v1.46
+ 1. 支持export raw_data. 数据库需要重新设计。临时版本
                     
 
 
