@@ -203,6 +203,9 @@ extension User_Third : UITableViewDelegate {
         let testCase = Expression<Int>("testCase")  //第几段测试
         let language = Expression<String>("language")
         let testMode = Expression<String>("testMode")
+        let MRS = Expression<Double>("MRS")
+        let SLOPE = Expression<Double>("slope")
+        let CPS = Expression<Double>("CPS")
 
         
         
@@ -344,6 +347,9 @@ extension User_Third : UITableViewDelegate {
             subContentsVC.distanceVary = user[distanceVary]
             subContentsVC.language = user[language]
             subContentsVC.testMode = user[testMode]
+            subContentsVC.delta1 = user[MRS]
+            subContentsVC.delta2 = user[SLOPE]
+            subContentsVC.delta3 = user[CPS]
      }
         self.navigationController?.pushViewController(subContentsVC, animated: true)
     }

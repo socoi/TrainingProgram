@@ -1039,8 +1039,12 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         let sex = Expression<String>("sex")
         let birth = Expression<String>("birth")
         let userName = Expression<String>("userName")  //用户姓名
-        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+        let testCase = Expression<Int>("testCase")  //第几段测试(1,2,3)
         let distanceVary = Expression<Double>("distanceVary")
+        
+        let MRS = Expression<Double>("MRS")
+        let SLOPE = Expression<Double>("slope")
+        let CPS = Expression<Double>("CPS")
         
         var csvText1 = "Subject ID, Subject Name, TrialID, MRS, Islope, CPS\n"
         var csvText2 = "Subject ID, Name, Sex, Date of Birth, No. of trial, Size, Reading Time, No. of Error, reading Distance, Readingspeed(CPM), logCPM\n"
@@ -1050,8 +1054,8 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         
         let realSex :[String:String] = ["男": "M", "女" : "F"]
         
-        
-        for user in try! db.prepare(testResults){
+        let users = testResults.select(*).order(userid.asc, testCase.asc)
+        for user in try! db.prepare(users){
             
             let id = user[userid]
             let name = user[userName]
@@ -1060,10 +1064,19 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
             let testCase = user[testCase]
             let vary = user[distanceVary]
             
+            let MRS_value = user[MRS]
+            let SLOPE_value = user[SLOPE]
+            let CPS_value = user[CPS]
+            
             // 可能出现编码问题
             //let name = String(utf8String: name_code.cString(using: .utf8)!)
             // let sex = String(utf8String: sex_code.cString(using: .utf8)!)
             
+            // csvText1
+            let newLine1 = "\(id),\(name),\(testCase),\(MRS_value),\(SLOPE_value),\(CPS_value)\n"
+            csvText1.append(newLine1)
+
+            // csvText2, exclude untested cases
             for i in 1...19
             {
                 let size = (Double(17) - vary - Double(i)) / 10.0
@@ -1093,14 +1106,17 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         // As the .CSV is already attached, you can simply add an email
         // and press send.
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let fileURL1 = dir?.appendingPathComponent(fileName1)
         let fileURL2 = dir?.appendingPathComponent(fileName2)
+        try! csvText1.write(to: fileURL1!, atomically: true, encoding: .utf8)
         try! csvText2.write(to: fileURL2!, atomically: true, encoding: .utf8)
             
         
         let emailController = MFMailComposeViewController()
         emailController.mailComposeDelegate = self
-        emailController.setSubject("CSV File")
+        emailController.setSubject("MNRead Data")
         emailController.setMessageBody("", isHTML: false)
+        emailController.addAttachmentData((NSData(contentsOfFile: (fileURL1?.path)!)! as Data) as Data, mimeType: "text/csv", fileName: "fit_curve.csv")
         emailController.addAttachmentData((NSData(contentsOfFile: (fileURL2?.path)!)! as Data) as Data, mimeType: "text/csv", fileName: "Raw_data.csv")
         
         if MFMailComposeViewController.canSendMail() {

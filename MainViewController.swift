@@ -40,6 +40,9 @@ class MainViewController: UIViewController {
         let details  = Expression<String>("details")   //subcontents 主键 (userid + testtime + testCase + testMode)
         let language  = Expression<String>("language") //广东话,普通话
         let testMode = Expression<String>("testMode") //自动或者手动
+        let MRS = Expression<Double>("MRS")
+        let SLOPE = Expression<Double>("slope")
+        let CPS = Expression<Double>("CPS")
 
         
         let timeSpent1 = Expression<Double>("timeSpent1")  //每段话时间（需log公式计算)
@@ -142,28 +145,6 @@ class MainViewController: UIViewController {
         let errorNum18 = Expression<Int>("errorNum18")
         let errorNum19 = Expression<Int>("errorNum19")
         
-        let logMar1 = Expression<Double>("logMar1")   //LogMar
-        let logMar2 = Expression<Double>("logMar2")
-        let logMar3 = Expression<Double>("logMar3")
-        let logMar4 = Expression<Double>("logMar4")
-        let logMar5 = Expression<Double>("logMar5")
-        let logMar6 = Expression<Double>("logMar6")
-        let logMar7 = Expression<Double>("logMar7")
-        let logMar8 = Expression<Double>("logMar8")
-        let logMar9 = Expression<Double>("logMar9")
-        let logMar10 = Expression<Double>("logMar10")
-        let logMar11 = Expression<Double>("logMar11")
-        let logMar12 = Expression<Double>("logMar12")
-        let logMar13 = Expression<Double>("logMar13")
-        let logMar14 = Expression<Double>("logMar14")
-        let logMar15 = Expression<Double>("logMar15")
-        let logMar16 = Expression<Double>("logMar16")
-        let logMar17 = Expression<Double>("logMar17")
-        let logMar18 = Expression<Double>("logMar18")
-        let logMar19 = Expression<Double>("logMar19")
-
-
-
 
 
 
@@ -189,7 +170,7 @@ class MainViewController: UIViewController {
 //                }
 //            }
 //        }
-        //try! db.run(testResults.drop())
+//        try! db.run(testResults.drop())
         
         
         try! db.run(testResults.create(ifNotExists: true) { t in
@@ -203,6 +184,9 @@ class MainViewController: UIViewController {
             t.column(birth)
             t.column(language)
             t.column(testMode)
+            t.column(MRS, defaultValue: -99.99)
+            t.column(SLOPE, defaultValue: -99.99)
+            t.column(CPS, defaultValue: -99.99)
             t.column(testCase, defaultValue: 0)
             t.column(timeSpent1, defaultValue: 0)
             t.column(timeSpent2, defaultValue: 0)
@@ -305,25 +289,6 @@ class MainViewController: UIViewController {
             t.column(errorNum18, defaultValue: -99)
             t.column(errorNum19, defaultValue: -99)
             
-            t.column(logMar1, defaultValue: -99)
-            t.column(logMar2, defaultValue: -99)
-            t.column(logMar3, defaultValue: -99)
-            t.column(logMar4, defaultValue: -99)
-            t.column(logMar5, defaultValue: -99)
-            t.column(logMar6, defaultValue: -99)
-            t.column(logMar7, defaultValue: -99)
-            t.column(logMar8, defaultValue: -99)
-            t.column(logMar9, defaultValue: -99)
-            t.column(logMar10, defaultValue: -99)
-            t.column(logMar11, defaultValue: -99)
-            t.column(logMar12, defaultValue: -99)
-            t.column(logMar13, defaultValue: -99)
-            t.column(logMar14, defaultValue: -99)
-            t.column(logMar15, defaultValue: -99)
-            t.column(logMar16, defaultValue: -99)
-            t.column(logMar17, defaultValue: -99)
-            t.column(logMar18, defaultValue: -99)
-            t.column(logMar19, defaultValue: -99)
         })
         
         

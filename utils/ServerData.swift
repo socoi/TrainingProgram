@@ -8,13 +8,13 @@
 
 import Foundation
 
+// xValue: min -> max(1.5) , yVlaue: min -> max
 func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String, userID : String, completionHandler: @escaping (String) ->())
 {
     let semaphore = DispatchSemaphore(value: 0)
     var x = Array<Double>()
     var y = Array<Double>()
     
-    // xValue: min -> 1.5 , yVlaue: 0 -> value
     // 需要去除y 中可能有的0(如果19个测试都通过则没有)与相应的x
 
 //    if y_value.contains(0) && y_value.count > 1{

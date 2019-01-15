@@ -56,9 +56,10 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
-    public var distanceVary = Double() //  pass to resultView controller
+    public var distanceVary = Double() //  1.0,2.0,3.0,0,4.0,5.0,6.0
     public var testLanguage = String() //普通话或者粤语
     public var testMode = String()  //自动或手动
+
     
     
     let startMenu = UIAlertController(title:"" , message: "", preferredStyle: .alert) //初始对话框，需要输入用户信息
@@ -75,6 +76,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
    
 
     public let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    public let semaphore0 = DispatchSemaphore(value: 0)
     public let semaphore = DispatchSemaphore(value: 2)
     public var isFinal = false
 
@@ -307,6 +309,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     //after countdown start test automatically
     public func countDown(){
         self.textView.text = ""
+        recordButton.setTitle("", for: [])
+        recordButton.isHidden = true
         textView.font = .systemFont(ofSize: 60)
         self.countDownNumber -= 1
         self.textView.text = " 測試[" + "\(self.testNumbers + 1)" + "]將於" + "\(self.countDownNumber) " + "秒後開始"
@@ -316,8 +320,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             //faceTracker?.fluidUpdateInterval(0.10, withReactionFactor: 0.3)// 0.05, 0.3
             
             //prepare for test
-            recordButton.isHidden = true
-            self.textView.text = ""
             recordButtonTapped()
         }
     }
@@ -325,13 +327,17 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
   
     public func updataDataBase(){
         
-        
-        //测试中需要记录的5个数据
+        //测试中需要记录的数据
         var s1 = String()
         var s2 = String()
         var s3 = String()
         var s4 = String()
         var s5 = String()
+        var xValue = [Double]()
+        var yLabel = [Double]()
+        var MRS_value = Double()
+        var Slope_value = Double()
+        var CPS_value = Double()
         
         
         //store data
@@ -362,6 +368,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         let testCase = Expression<Int>("testCase") //第几次测试
         let language = Expression<String>("language")
         let testMode = Expression<String>("testMode")
+        let MRS = Expression<Double>("MRS")
+        let SLOPE = Expression<Double>("slope")
+        let CPS = Expression<Double>("CPS")
         
         // updated information
         
@@ -419,15 +428,56 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             try! db.run(update4)
             let update5 = selectedRow.update(s15 <- self.errorNum[number - 1])
             try! db.run(update5)
+            
+            // prepare for passing to server
+            yLabel.append(self.timeSpent[number - 1])
+            let size = (Double(17) - self.distanceVary - Double(number)) / 10.0
+            xValue.append(size)
+
         }
+        
+        
+        // 传到服务器上计算regression
+        // 保证数据先传回
+        
+        semaphore0.signal()
+        dataUploadRequest(x_value: xValue.reversed(), y_value: yLabel.reversed(), userName: self.userName, userID: self.userId, completionHandler: { (data) in
+            let delta = data.components(separatedBy: " ")
+            print(delta)
+            do{
+                MRS_value = Double(delta[0])!
+                Slope_value = Double(delta[1])!
+                CPS_value = Double(delta[2].dropLast().dropLast())! //去掉\n
+            }
+            catch{
+                print("did not get number, please return")
+            }
+        })
+        _ = semaphore0.wait(timeout: DispatchTime.distantFuture) //等任务完成
+        
+        
+        // update curve_fit data
+        let update1 = selectedRow.update(MRS <- MRS_value)
+        try! db.run(update1)
+        let update2 = selectedRow.update(SLOPE <- Slope_value)
+        try! db.run(update2)
+        let update3 = selectedRow.update(CPS <- CPS_value)
+        try! db.run(update3)
+        
+        // remove previous data
+        xValue.removeAll()
+        yLabel.removeAll()
     }
     
     public func stopTest(){
       
+        recordButton.isHidden = true
         updataDataBase()
         
         //全部测试结束
-        if(self.mnread_num == 1){self.messageBox(titlemessage: "全部測試結束", title: "返回", navi: true)}
+        if(self.mnread_num == 1){
+            self.messageBox(titlemessage: "全部測試結束", title: "返回", navi: true)
+        }
         else//准备另一个测试
         {
             self.mnread_num -= 1
@@ -472,7 +522,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(SFSpeechRecognizer.supportedLocales())
         
         agepickView.delegate = self
         sexpickView.delegate = self
@@ -662,24 +711,30 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.recordButton.setTitle("停止錄音", for: [])
                 self.beforeTime = Date()
             }
-            
-            if(self.recordButton.currentTitle! == "開始錄音" && self.testMode == "手動"){
+        
+            //  开始录音
+            if(self.recordButton.currentTitle == "" && self.testMode == "手動"){
                 self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
                 self.readingChart = self.readingChart.filter(){$0 != self.testResults}
                 try! self.startRecording()
+                self.recordButton.isHidden = false
                 self.beforeTime = Date()
                 return
             }
-            
-            if(self.recordButton.currentTitle! == "停止錄音" && self.testMode == "手動"){
+        
+            // 结束录音
+            if(self.recordButton.currentTitle == "停止錄音" && self.testMode == "手動"){
                 self.audioRecorder.stop()
                 self.stopRecord()
-                self.recordButton.setTitle("開始錄音", for: [])
             }
         }
 
     
     func manualInsert(timeSpent : Double){
+        
+        recordButton.isHidden = true
+        recordButton.setTitle("", for: [])
+        
         let optionMenu = UIAlertController(title: "", message: "", preferredStyle: .alert)
 
         let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [
@@ -772,7 +827,9 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
         
         
         // 手动模式下输入错字，重新计算timespent
-        if(testMode == "手動"){manualInsert(timeSpent: costTime[self.testNumbers])}
+        if(testMode == "手動"){
+            manualInsert(timeSpent: costTime[self.testNumbers])
+        }
         if(testMode == "自動"){
             if(errorWordsNum < 11){
                 if(testNumbers != 18){ //19个测试

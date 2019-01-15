@@ -288,9 +288,9 @@ class PNLineChart: UIView{
             var lastY: CGFloat = 0.0
             let inflexionWidth = chartData.inflexionPointWidth
             
-            
+            // 从不为0点的开始draw
             for index in 0..<chartData.itemCount - 1{
-                if(CGFloat(chartData.getData(index).y) == 0 && CGFloat(chartData.getData(index+1).y) != 0 ){
+                if(CGFloat(chartData.getData(index).y) != 0 && CGFloat(chartData.getData(index+1).y) != 0 ){
                     startIndex = index
                     break
                 }

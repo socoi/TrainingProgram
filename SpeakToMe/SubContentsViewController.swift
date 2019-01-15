@@ -411,22 +411,6 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
             xValue.append(xValueLabel[19 - yLabel.count + i])
         }
         
-        // 传到服务器上计算regression
-        // 保证数据先传回
-        semaphore.signal()
-        dataUploadRequest(x_value: xValue, y_value: yLabel, userName: userName, userID: userID, completionHandler: { (data) in
-                print(data)
-            let delta = data.components(separatedBy: " ")
-            do{
-            self.delta1 = Double(delta[0])!
-            self.delta2 = Double(delta[1])!
-            self.delta3 = Double(delta[2].dropLast().dropLast())! //去掉\n
-            }
-            catch{
-                print("did not get number, please return")
-            }
-            })
- 
         //lineChart.center = self.view.center
         //lineChart.center = mnreadChart.
         
@@ -456,9 +440,6 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
               self.regressionIndex.append(delta2)
               self.regressionIndex.append(distanceVary)
         
-        
-            _ = semaphore.wait(timeout: DispatchTime.distantFuture) //等任务完成
-
             //3个交点的y坐标
             //self.regressionLabel = [self.yLabel[0] , self.theta , self.theta]
             self.regressionLabel = [self.yLabel[0] , delta1 , delta1]
