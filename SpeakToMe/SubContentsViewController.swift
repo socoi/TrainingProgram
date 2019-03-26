@@ -400,12 +400,14 @@ class SubContentsViewController: UIViewController , SpreadsheetViewDataSource, S
         
         yLabel = yLabel.filter{$0 != 0.0}
         xLabel = xLabel.reversed()
-        //commom case: not all test pass(need last y=0 for calculation)
-        if(yLabel.count != 19){
-            yLabel = yLabel.reversed()
-            yLabel.append(0.0)
-            yLabel = yLabel.reversed()
-        }
+        
+        //case: not all test pass(need last y=0 for calculation?  dont need?)
+//        if(yLabel.count != 19){
+//            yLabel = yLabel.reversed()
+//            yLabel.append(0.0)
+//            yLabel = yLabel.reversed()
+//        }
+        
         for i in 0...(yLabel.count - 1){
             //initial calculatio
             xValue.append(xValueLabel[19 - yLabel.count + i])

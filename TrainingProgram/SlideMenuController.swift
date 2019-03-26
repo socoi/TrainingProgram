@@ -45,6 +45,7 @@ public struct SlideMenuOptions {
 
 open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, MFMailComposeViewControllerDelegate  {
     
+    public let semaphore0 = DispatchSemaphore(value: 0)
     
     public enum SlideAction {
         case open
@@ -1039,7 +1040,7 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         let sex = Expression<String>("sex")
         let birth = Expression<String>("birth")
         let userName = Expression<String>("userName")  //用户姓名
-        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2)
+        let testCase = Expression<Int>("testCase")  //第几段测试(1 or 2,3 )
         let distanceVary = Expression<Double>("distanceVary")
         
         var csvText1 = "Subject ID, Subject Name, TrialID, MRS, Islope, CPS\n"
@@ -1050,8 +1051,14 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         
         let realSex :[String:String] = ["男": "M", "女" : "F"]
         
+        var x = [Double]() //size
+        var y = [Double]() //logCPM
+        var MRS_value = Double()
+        var Slope_value = Double()
+        var CPS_value = Double()
         
-        for user in try! db.prepare(testResults){
+        let users = testResults.select(*).order(userid.asc, testCase.asc)
+        for user in try! db.prepare(users){
             
             let id = user[userid]
             let name = user[userName]
@@ -1059,6 +1066,11 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
             let birth = user[birth]
             let testCase = user[testCase]
             let vary = user[distanceVary]
+            
+            x.removeAll()
+            y.removeAll()
+            
+
             
             // 可能出现编码问题
             //let name = String(utf8String: name_code.cString(using: .utf8)!)
@@ -1077,14 +1089,35 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
                 let readingTime = user[Expression<Double>(costTimeN)]
                 
                 
+                
+                
                 if(user[Expression<Int>(errorN)] != -99 && user[Expression<Int>(errorN)] != 12 ){
+                    x.append(size)
+                    y.append(logCPM)
                     let newLine2 = "\(id),\(name),\(sex),\(birth),\(testCase),\(size),\(readingTime),\(numofError),\(realDistance[vary]!),\(CPM),\(logCPM)\n"
                     
                     csvText2.append(newLine2)
-                    
                 }
             }
             
+            // fit_curve data calculation
+            semaphore0.signal()
+            dataUploadRequest(x_value: x.reversed(), y_value: y.reversed(), userName: "userName", userID: "userID", completionHandler: { (data) in
+                let delta = data.components(separatedBy: " ")
+                do{
+                    MRS_value = Double(delta[0])!
+                    Slope_value = Double(delta[1])!
+                    CPS_value = Double(delta[2].dropLast().dropLast())! //去掉\n
+                }
+                catch{
+                    print("did not get number, please return")
+                }
+            })
+            _ = semaphore0.wait(timeout: DispatchTime.distantFuture) //等任务完成
+            
+            // csvText1
+            let newLine1 = "\(id),\(name),\(testCase),\(MRS_value),\(Slope_value),\(CPS_value)\n"
+            csvText1.append(newLine1)
         }
         
         // If the view controller can send the email.
@@ -1093,14 +1126,17 @@ open class SlideMenuController: UIViewController, UIGestureRecognizerDelegate, M
         // As the .CSV is already attached, you can simply add an email
         // and press send.
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let fileURL1 = dir?.appendingPathComponent(fileName1)
         let fileURL2 = dir?.appendingPathComponent(fileName2)
+        try! csvText1.write(to: fileURL1!, atomically: true, encoding: .utf8)
         try! csvText2.write(to: fileURL2!, atomically: true, encoding: .utf8)
             
         
         let emailController = MFMailComposeViewController()
         emailController.mailComposeDelegate = self
-        emailController.setSubject("CSV File")
+        emailController.setSubject("MNRead data")
         emailController.setMessageBody("", isHTML: false)
+        emailController.addAttachmentData((NSData(contentsOfFile: (fileURL1?.path)!)! as Data) as Data, mimeType: "text/csv", fileName: "Curve_fit.csv")
         emailController.addAttachmentData((NSData(contentsOfFile: (fileURL2?.path)!)! as Data) as Data, mimeType: "text/csv", fileName: "Raw_data.csv")
         
         if MFMailComposeViewController.canSendMail() {

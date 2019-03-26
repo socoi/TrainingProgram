@@ -140,7 +140,9 @@ class PNBarChart: UIView {
             var barXPosition: CGFloat!
             
             if barWidth != nil && barWidth > 0 {
-                barXPosition = CGFloat(index) * xLabelWidth + chartMargin + (xLabelWidth / 2.0) - (barWidth / 2.0)
+                let a = CGFloat(index) * xLabelWidth
+                let b = xLabelWidth / 2.0 - barWidth / 2.0
+                barXPosition = a + chartMargin + b
             } else {
                 barXPosition = CGFloat(index) * xLabelWidth + chartMargin + xLabelWidth * 0.25
                 if showLabel {

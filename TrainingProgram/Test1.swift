@@ -56,7 +56,7 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     public var fontColor = String()
     public var backColor = String()
     public var watchDistance = String() //depend watch distance adjust font size
-    public var distanceVary = Double() //  pass to resultView controller
+    public var distanceVary = Double() //  1.0,2.0,3.0,0,4.0,5.0,6.0
     public var testLanguage = String() //普通话或者粤语
     public var testMode = String()  //自动或手动
     
@@ -307,6 +307,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     //after countdown start test automatically
     public func countDown(){
         self.textView.text = ""
+        recordButton.setTitle("", for: [])
+        recordButton.isHidden = true
         textView.font = .systemFont(ofSize: 60)
         self.countDownNumber -= 1
         self.textView.text = " 測試[" + "\(self.testNumbers + 1)" + "]將於" + "\(self.countDownNumber) " + "秒後開始"
@@ -316,8 +318,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
             //faceTracker?.fluidUpdateInterval(0.10, withReactionFactor: 0.3)// 0.05, 0.3
             
             //prepare for test
-            recordButton.isHidden = true
-            self.textView.text = ""
             recordButtonTapped()
         }
     }
@@ -423,7 +423,8 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     }
     
     public func stopTest(){
-      
+        
+        recordButton.isHidden = true
         updataDataBase()
         
         //全部测试结束
@@ -471,8 +472,6 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print(SFSpeechRecognizer.supportedLocales())
         
         agepickView.delegate = self
         sexpickView.delegate = self
@@ -663,23 +662,25 @@ public class Test1: UIViewController, SFSpeechRecognizerDelegate, UIPickerViewDe
                 self.beforeTime = Date()
             }
             
-            if(self.recordButton.currentTitle! == "開始錄音" && self.testMode == "手動"){
+            if(self.recordButton.currentTitle == "" && self.testMode == "手動"){
                 self.testResults = showContents(leftContents: self.readingChart, times: self.testNumbers + 1, textView: self.textView, recordButton: self.recordButton)
                 self.readingChart = self.readingChart.filter(){$0 != self.testResults}
                 try! self.startRecording()
+                self.recordButton.isHidden = false
                 self.beforeTime = Date()
                 return
             }
             
-            if(self.recordButton.currentTitle! == "停止錄音" && self.testMode == "手動"){
+            if(self.recordButton.currentTitle == "停止錄音" && self.testMode == "手動"){
                 self.audioRecorder.stop()
                 self.stopRecord()
-                self.recordButton.setTitle("開始錄音", for: [])
             }
         }
 
     
     func manualInsert(timeSpent : Double){
+        recordButton.isHidden = true
+        recordButton.setTitle("", for: [])
         let optionMenu = UIAlertController(title: "", message: "", preferredStyle: .alert)
 
         let attributedString = NSAttributedString(string: "請輸入錯字數目", attributes: [

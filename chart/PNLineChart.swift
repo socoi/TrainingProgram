@@ -288,9 +288,10 @@ class PNLineChart: UIView{
             var lastY: CGFloat = 0.0
             let inflexionWidth = chartData.inflexionPointWidth
             
-            
+            // 从不为0点的开始draw
             for index in 0..<chartData.itemCount - 1{
-                if(CGFloat(chartData.getData(index).y) == 0 && CGFloat(chartData.getData(index+1).y) != 0 ){
+            if(CGFloat(chartData.getData(index).y) != 0 &&
+                CGFloat(chartData.getData(index+1).y) != 0 ){
                     startIndex = index
                     break
                 }
@@ -326,7 +327,7 @@ class PNLineChart: UIView{
                     pointPath.move(to: CGPoint(x: circleCenter.x + inflexionWidth / 2.0, y: circleCenter.y))
                     pointPath.addArc(withCenter: circleCenter, radius: CGFloat(inflexionWidth/2.0), startAngle: 0.0, endAngle: CGFloat(M_PI*2.0), clockwise: true)
                     
-                    let textLabel = UITextField(frame : CGRect(x: x - inflexionWidth/2.0, y: y - inflexionWidth/2.0 + 7, width: 60, height: 10))
+                    let textLabel = UITextField(frame : CGRect(x: x - inflexionWidth/2.0, y: y - inflexionWidth/2.0 + 7, width: 60, height: 20))
                     
                     //精度,0不显示
                     if yValue != 0{

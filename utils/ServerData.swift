@@ -6,8 +6,13 @@
 //  Copyright © 2018 Zhao Ruohan. All rights reserved.
 //
 
+//服务开关： /usr/tomcat/bin ./startup.sh or ./shutdown.sh
+//检查防火墙: sudo firewall-cmd --state
+//
+
 import Foundation
 
+// xValue: min -> max(1.5) , yVlaue: min -> max
 func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String, userID : String, completionHandler: @escaping (String) ->())
 {
     let semaphore = DispatchSemaphore(value: 0)
@@ -52,9 +57,9 @@ func dataUploadRequest(x_value : [Double], y_value : [Double], userName: String,
             return
         }
         
-        let string = String(data: data, encoding: String.Encoding.utf8)
-        print(string) //JSONSerialization
-        print("response = \(response)")
+        //let string = String(data: data, encoding: String.Encoding.utf8)
+        //print(string) //JSONSerialization
+        //print("response = \(response)")
         
         if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
             print("statusCode should be 200, but is \(httpStatus.statusCode)")

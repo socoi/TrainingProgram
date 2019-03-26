@@ -8,6 +8,10 @@
 
 import Foundation
 
+
+
+
+
 // This delegate method is called every time the face recognition has detected something (including change)
 public func faceIsTracked(_ faceRect: CGRect, withOffsetWidth offsetWidth: Float, andOffsetHeight offsetHeight: Float, andDistance distance: Float, textView: UITextView) {
     CATransaction.begin()
